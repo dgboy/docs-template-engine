@@ -1,8 +1,8 @@
 const express = require('express');
 const app = express();
-const path = require('path');
 
-app.use('/', express.static(path.join(__dirname, 'client')));
+app.use('/', express.static(__dirname + '/client'));
+console.log("Work!");
 
 // ROUTES
 // let routes = require('./app/server/routes/index');

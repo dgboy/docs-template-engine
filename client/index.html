@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="ru" ng-app="myApp">
+
+<head>
+    <meta charset="UTF-8">
+    <link rel="shortcut icon" href="favicon.ico" type="image/x-icon">
+    <link rel="stylesheet" href="lib/bootstrap/bootstrap.min.css">
+    <link rel="stylesheet" href="lib/custom/style.css">
+    <title>Шаблонизатор документов</title>
+</head>
+
+<body class="col-10 mx-auto">
+    <nav class="navbar navbar-dark bg-dark mb-2">
+      <span class="nav-title mx-auto navbar-brand font-weight-bold">Шаблонизатор документов</span>
+    </nav>
+
+    <div class="row" ng-controller="appController">
+      <div class="col-3 bg-dark">
+        <ul class="list-group ml-2 my-2">
+          <li class="list-group-item list-group-item-action mb-1" ng-repeat="item in templates"
+            ng-class="{active : active === item.name}" ng-click="chooseTemplate(item.name)">
+            {{item.name}}
+          </li>
+        </ul>
+      </div>
+
+      <canvas id="canvas" width="800px" height="496px">
+        <p>Ваш браузер не поддерживает элемент canvas!</p>
+      </canvas>
+    </div>
+
+    <footer class="card-footer text-muted bg-dark my-2">
+      <div class="text-center">&copy; 2020, Daniil Gorbunov</div>
+    </footer>
+
+    <script src="lib/bootstrap/jquery-3.4.1.slim.min.js"></script>
+    <script src="lib/bootstrap/bootstrap.min.js"></script>
+    <script src="lib/bootstrap/popper.min.js"></script>
+
+    <script src="lib/angular/angular.min.js"></script>
+    <script src="lib/angular/angular-route.min.js"></script>
+
+    <script src="app.js"></script>
+</body>
+
+</html>

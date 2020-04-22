@@ -7,12 +7,15 @@
     "lib": "lib"
   },
   "scripts": {
-    "start": "start bin/www",
+    "start": "node ./bin/www",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [
     "html5_canvas"
   ],
   "author": "Daniil Gorbunov",
-  "license": "ISC"
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.17.1"
+  }
 }
