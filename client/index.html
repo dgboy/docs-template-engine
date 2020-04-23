@@ -14,8 +14,15 @@
       <span class="nav-title mx-auto navbar-brand font-weight-bold">Шаблонизатор документов</span>
     </nav>
 
-    <div class="row" ng-controller="appController">
+    <div class="row justify-content-around" ng-controller="appController">
+      <canvas class="" id="canvas" width="800px" height="496px">
+        <p>Ваш браузер не поддерживает элемент canvas!</p>
+      </canvas>
+
       <div class="col-3 bg-dark">
+        <button class="btn btn-success mx-auto my-2" ng-click="createPDF()">Создать PDF</button>
+        <!-- <button class="btn btn-info mx-auto my-2" ng-click="loadData()">Загрузить...</button> -->
+
         <ul class="list-group ml-2 my-2">
           <li class="list-group-item list-group-item-action mb-1" ng-repeat="item in templates"
             ng-class="{active : active === item.name}" ng-click="chooseTemplate(item.name)">
@@ -23,10 +30,6 @@
           </li>
         </ul>
       </div>
-
-      <canvas id="canvas" width="800px" height="496px">
-        <p>Ваш браузер не поддерживает элемент canvas!</p>
-      </canvas>
     </div>
 
     <footer class="card-footer text-muted bg-dark my-2">
@@ -39,6 +42,7 @@
 
     <script src="lib/angular/angular.min.js"></script>
     <script src="lib/angular/angular-route.min.js"></script>
+    <script src="lib/jspdf/jspdf.min.js"></script>
 
     <script src="app.js"></script>
 </body>
