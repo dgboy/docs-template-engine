@@ -9,12 +9,14 @@ const h = canvas.height;
 const imagePath = "images/";
 
 
-
-myApp.controller('appController', ($scope) => {
+myApp.controller('appController', ($rootScope, $scope) => {
+  // $scope.dataAddress = "";
   $scope.templates = [
     {
       "name": "Грамота",
       "background": "charter.jpg",
+      "width": 793,
+      "height": 1122,
       "elems": [
         {
           "type": "label",
@@ -65,21 +67,87 @@ myApp.controller('appController', ($scope) => {
           "font": 20
         },
         {
+          "type": "label",
+          "value": "Выполнил:",
+          "x": 250,
+          "y": 350,
+          "font": 14
+        },
+        {
           "type": "text",
-          "value": "<студент>",
+          "value": "<student>",
           "x": 250,
           "y": 350,
           "font": 14
         }
       ]
+    },
+    {
+      "name": "Титульный лист диплома",
+      "background": "diplom-title.jpg",
+      "width": 793,
+      "height": 1122,
+      "elems": [
+        {
+          "name": "student",
+          "type": "text",
+          "value": "",
+          "x": 140,
+          "y": 855,
+          "font": 20
+        },
+        {
+          "name": "group",
+          "type": "text",
+          "value": "",
+          "x": 160,
+          "y": 833,
+          "font": 20
+        },
+        {
+          "name": "teacher",
+          "type": "text",
+          "value": "",
+          "x": 480,
+          "y": 835,
+          "font": 20
+        }
+      ]
     }
   ];
+  $scope.datasetItem = 0;
 
-  $scope.chooseTemplate = (templateName) => {
-    $scope.active = templateName;
+  let сonvertPxToMM = px => Math.floor(px * 0.264583);
+  let convertMmToPx = mm => Math.floor(mm / 0.264583);
+
+  let printText = (elems) => {
+    for (let i = 0; i < elems.length; i++) {
+      const element = elems[i];
+      context.font = `${element.font}px Times New Roman`;
+
+      if (element.type === "text") {
+        if ($scope.data) {
+          element.value = $scope.data[$scope.datasetItem][element.name];
+        }
+        context.fillText(element.value, element.x, element.y);
+      }
+
+      // if (element.type === 'text') {
+      //   // if (!value) {
+          
+      //   // }
+      //   context.fillText(element.value, element.x, element.y);
+      // } else if(element.type === 'label') {
+      // }
+    }
+  }
+
+
+  $scope.chooseTemplate = (template) => {
+    $scope.activeT = template;
 
     $scope.templates.forEach(template => {
-      if (template.name === $scope.active) {
+      if (template.name === $scope.activeT.name) {
         $scope.changeCanvas(template);
       }
     });
@@ -89,40 +157,26 @@ myApp.controller('appController', ($scope) => {
     canvas.width = template.width;
     canvas.height = template.height;
     context.clearRect(0, 0, canvas.width, canvas.height);
-    
-    const elems = template.elems;
 
-    console.log("Need: " + convertMmToPx(210) + "x" + convertMmToPx(297));
-    console.log("Have: " + ConvertPxToMM(canvas.width) + "x" + ConvertPxToMM(canvas.height));
+    // console.log("Need: " + convertMmToPx(210) + "x" + convertMmToPx(297));
+    // console.log("Have: " + сonvertPxToMM(canvas.width) + "x" + сonvertPxToMM(canvas.height));
 
-    changeBackground(template.background);
-
-    for (let i = 0; i < elems.length; i++) {
-      const element = elems[i];
-      context.font = `${element.font}px Times New Roman`;
-
-      context.fillText(element.value, element.x, element.y);
-      // if(element.type === 'label') {
-      // } else if(element.type === 'text') {
-      //   context.fillText(element.value, element.x, element.y);
-      // }
-    }
-  };
-
-  let changeBackground = (background) => {
-    if (background) {
+    if (template.background) {
       let img = new Image();
-      img.src = imagePath + background;
+      img.src = imagePath + template.background;
 
       img.onload = () => {
-        canvas.width = img.width;
-        canvas.height = img.height;
-        context.drawImage(img, 0, 0);
+        context.drawImage(img, 0, 0, template.width, template.height);
+        printText(template.elems);
       }
+    } else {
+      printText(template.elems);
     }
   };
 
-  $scope.createPDF = () => {
+  $scope.createPDF = (template) => {
+    printText(template.elems);
+
     const quality = 1; // качество от 0 до 1, заодно и сжать можно
     let image = {
       data: canvas.toDataURL('image/png', quality),
@@ -130,8 +184,8 @@ myApp.controller('appController', ($scope) => {
       width: canvas.width
     };
 
-    let w = ConvertPxToMM(image.width);
-    let h = ConvertPxToMM(image.height);
+    let w = сonvertPxToMM(image.width);
+    let h = сonvertPxToMM(image.height);
     let orientation = w > h ? 'l' : 'p';
 
     //Создаем документ PDF размером с нашу картинку
@@ -144,66 +198,19 @@ myApp.controller('appController', ($scope) => {
     docPDF.output('save', 'test.pdf');
   };
 
-  function ConvertPxToMM(pixels) {
-    return Math.floor(pixels * 0.264583);
-  }
+  $scope.loadData = () => {
+    fetch($scope.address)
+      .then(res => res.json())
+      .then(data => $scope.data = data)
+      .then($scope.changeCanvas($scope.activeT));
+  };
 
-  let convertMmToPx = mm => Math.floor(mm / 0.264583);
+  $scope.changeDataset = (step) => {
+    console.log($scope.data.length + " :L = C: " + $scope.datasetItem);
+
+    if($scope.datasetItem + step >= 0 && $scope.datasetItem + step < $scope.data.length) {
+      $scope.datasetItem += step;
+      $scope.changeCanvas($scope.activeT);
+    }
+  };
 });
-
-
-var mouse = {
-  x: 0,
-  y: 0
-};
-
-var draw = false;
-
-
-canvas.addEventListener("mousedown", (e) => {
-  mouse.x = e.pageX - canvas.offsetLeft;
-  mouse.y = e.pageY - canvas.offsetTop;
-  console.log("X: " + e.pageX + " + " + canvas.offsetLeft + " = ");
-  console.log("Y: " + e.pageY + " + " + canvas.offsetTop + " = ");
-  draw = true;
-  context.beginPath();
-  context.moveTo(mouse.x, mouse.y);
-});
-
-canvas.addEventListener("mousemove", (e) => {
-  if (draw == true) {
-    mouse.x = e.pageX - canvas.offsetLeft;
-    mouse.y = e.pageY - canvas.offsetTop;
-    context.lineTo(mouse.x, mouse.y);
-    context.stroke();
-  }
-});
-
-canvas.addEventListener("mouseup", (e) => {
-  mouse.x = e.pageX - canvas.offsetLeft;
-  mouse.y = e.pageY - canvas.offsetTop;
-  context.lineTo(mouse.x, mouse.y);
-  context.stroke();
-  context.closePath();
-  draw = false;
-});
-
-
-// const handleImage = (e) => {
-//   var reader = new FileReader();
-//   reader.onload = function(event){
-//     var img = new Image();
-//     img.onload = function(){
-//       canvas.width = img.width;
-//       canvas.height = img.height;
-//       context.drawImage(img,0,0);
-//     }
-//     img.src = event.target.result;
-//   }
-
-//   reader.readAsDataURL(e.target.files[0]);
-// }
-
-// const imageLoader = document.getElementById('imageFile');
-
-// imageLoader.addEventListener('change', handleImage, false);

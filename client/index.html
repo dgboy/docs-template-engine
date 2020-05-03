@@ -9,27 +9,85 @@
     <title>Шаблонизатор документов</title>
 </head>
 
-<body class="col-10 mx-auto">
+<body class="col-10 mx-auto" ng-controller="appController">
     <nav class="navbar navbar-dark bg-dark mb-2">
       <span class="nav-title mx-auto navbar-brand font-weight-bold">Шаблонизатор документов</span>
     </nav>
 
-    <div class="row justify-content-around" ng-controller="appController">
-      <canvas class="" id="canvas" width="800px" height="496px">
-        <p>Ваш браузер не поддерживает элемент canvas!</p>
-      </canvas>
-
+    <div class="row justify-content-around">
       <div class="col-3 bg-dark">
-        <button class="btn btn-success mx-auto my-2" ng-click="createPDF()">Создать PDF</button>
+        <input type="text" ng-model="address" class="form-control" placeholder="API адрес данных">
         <!-- <button class="btn btn-info mx-auto my-2" ng-click="loadData()">Загрузить...</button> -->
+        <ul class="list-group ml-1 my-0">
+          <li class="list-group-item list-group-item-action" ng-repeat="template in templates"
+          ng-class="{active : activeT.name === template.name}" ng-click="chooseTemplate(template)">
+            <div>{{template.name}}</div>
+            <!-- <button class="btn btn-warning mx-auto my-1" ng-click="loadData(template)" ng-if="active === template.name">Загрузить...</button> -->
+            <button type="button" class="btn btn-warning mx-auto my-1" data-toggle="modal" data-target="#exampleModal"
+                    data-whatever="@mdo" ng-if="activeT.name === template.name">Загрузить...</button>
 
-        <ul class="list-group ml-2 my-2">
-          <li class="list-group-item list-group-item-action mb-1" ng-repeat="item in templates"
-            ng-class="{active : active === item.name}" ng-click="chooseTemplate(item.name)">
-            {{item.name}}
+            <!-- <div class="input-group mb-1" ng-if="active === template.name">
+              <input type="text" ng-model="address" class="form-control" placeholder="API адрес данных">
+              <div class="input-group-append">
+                <button class="btn btn-success" type="button" ng-click="loadData(template)">Загрузить</button>
+              </div>
+            </div> -->
+
+            <button class="btn btn-success mx-auto my-1" ng-click="createPDF(template)" ng-if="activeT.name === template.name">PDF</button>
           </li>
         </ul>
       </div>
+
+      <div>
+        <canvas class="" id="canvas" width="800px" height="496px">
+          <p>Ваш браузер не поддерживает элемент canvas!</p>
+        </canvas>
+      </div>
+
+      <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title" id="exampleModalLabel">Загрузить данные</h5>
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </div>
+  
+            <div class="modal-body">
+              <form>
+                <div class="form-group">
+                  <label for="recipient-name" class="col-form-label">Введите API сайта с данными:</label>
+                  <!-- <input type="text" class="form-control" id="message-text"> -->
+                  <input type="text" ng-model="address" class="form-control" id="message-text" placeholder="API адрес данных">
+              </div>
+                <div class="form-group">
+                  <label for="message-text" class="col-form-label">Или загрузите JSON-файл:</label>
+                  <input type="file" class="form-control" id="message-text"></input>
+                </div>
+              </form>
+            </div>
+  
+            <div class="modal-footer">
+              <button type="button" class="btn btn-secondary" data-dismiss="modal">Отмена</button>
+              <button type="button" class="btn btn-primary" data-dismiss="modal" ng-click="loadData()">Загрузить</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="row col-8 float-right">
+      <button class="carousel-control-prev" data-slide="prev" ng-click="changeDataset(-1)">
+        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+        <span class="sr-only">Previous</span>
+      </button>
+      
+      <button class="carousel-control-next" data-slide="next" ng-click="changeDataset(1)">
+        <span class="carousel-control-next-icon" aria-hidden="true"></span>
+        <span class="sr-only">Next</span>
+      </button>
     </div>
 
     <footer class="card-footer text-muted bg-dark my-2">
