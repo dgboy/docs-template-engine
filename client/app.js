@@ -9,9 +9,43 @@ const h = canvas.height;
 const imagePath = "images/";
 
 
-myApp.controller('appController', ($rootScope, $scope) => {
+myApp.controller('appController', ($scope) => {
   // $scope.dataAddress = "";
+  $scope.datasetItem = 0;
   $scope.templates = [
+    {
+      "name": "Титульный лист диплома",
+      // "background": "diplom-title.jpg",
+      "background": null,
+      "width": 793,
+      "height": 1122,
+      "elems": [
+        {
+          "name": "student",
+          "type": "text",
+          "value": "",
+          "x": 140,
+          "y": 855,
+          "font": 20
+        },
+        {
+          "name": "group",
+          "type": "text",
+          "value": "",
+          "x": 160,
+          "y": 833,
+          "font": 20
+        },
+        {
+          "name": "teacher",
+          "type": "text",
+          "value": "",
+          "x": 480,
+          "y": 835,
+          "font": 20
+        }
+      ]
+    },
     {
       "name": "Грамота",
       "background": "charter.jpg",
@@ -81,66 +115,46 @@ myApp.controller('appController', ($rootScope, $scope) => {
           "font": 14
         }
       ]
-    },
-    {
-      "name": "Титульный лист диплома",
-      "background": "diplom-title.jpg",
-      "width": 793,
-      "height": 1122,
-      "elems": [
-        {
-          "name": "student",
-          "type": "text",
-          "value": "",
-          "x": 140,
-          "y": 855,
-          "font": 20
-        },
-        {
-          "name": "group",
-          "type": "text",
-          "value": "",
-          "x": 160,
-          "y": 833,
-          "font": 20
-        },
-        {
-          "name": "teacher",
-          "type": "text",
-          "value": "",
-          "x": 480,
-          "y": 835,
-          "font": 20
-        }
-      ]
     }
   ];
-  $scope.datasetItem = 0;
 
   let сonvertPxToMM = px => Math.floor(px * 0.264583);
   let convertMmToPx = mm => Math.floor(mm / 0.264583);
 
-  let printText = (elems) => {
+  let printElements = (elems, item) => {
     for (let i = 0; i < elems.length; i++) {
       const element = elems[i];
       context.font = `${element.font}px Times New Roman`;
+      context.fillStyle = "black";
 
       if (element.type === "text") {
         if ($scope.data) {
-          element.value = $scope.data[$scope.datasetItem][element.name];
+          element.value = $scope.data[item][element.name];
+        } else {
+          context.fillStyle = "red";
+          element.value = element.name;
         }
+
         context.fillText(element.value, element.x, element.y);
       }
-
-      // if (element.type === 'text') {
-      //   // if (!value) {
-          
-      //   // }
-      //   context.fillText(element.value, element.x, element.y);
-      // } else if(element.type === 'label') {
-      // }
     }
-  }
+  };
+
+  let printBackgroundAsync = async (src) => {
+    return new Promise((resolve, reject) => {
+      let img = new Image();
+      img.src = src;
+      img.onload = () => resolve(img);
+      img.onerror = reject;
+    });
+  };
+
+  let loadImageAsync = async (type, quality) => {
+    return new Promise((resolve, reject) => {
+      resolve(canvas.toDataURL(type, quality));
+      // img.onerror = reject;
+    });
+  };
 
 
   $scope.chooseTemplate = (template) => {
@@ -162,47 +176,55 @@ myApp.controller('appController', ($rootScope, $scope) => {
     // console.log("Have: " + сonvertPxToMM(canvas.width) + "x" + сonvertPxToMM(canvas.height));
 
     if (template.background) {
-      let img = new Image();
-      img.src = imagePath + template.background;
-
-      img.onload = () => {
-        context.drawImage(img, 0, 0, template.width, template.height);
-        printText(template.elems);
-      }
+      printBackgroundAsync(imagePath + template.background)
+        .then(img => {
+          context.drawImage(img, 0, 0, template.width, template.height);
+          printElements(template.elems, $scope.datasetItem);
+        });
     } else {
-      printText(template.elems);
+      printElements(template.elems, $scope.datasetItem);
     }
   };
 
   $scope.createPDF = (template) => {
-    printText(template.elems);
-
     const quality = 1; // качество от 0 до 1, заодно и сжать можно
-    let image = {
-      data: canvas.toDataURL('image/png', quality),
-      height: canvas.height,
-      width: canvas.width
-    };
-
-    let w = сonvertPxToMM(image.width);
-    let h = сonvertPxToMM(image.height);
+    // let pdfs = [];
+    let w = сonvertPxToMM(canvas.width);
+    let h = сonvertPxToMM(canvas.height);
     let orientation = w > h ? 'l' : 'p';
 
-    //Создаем документ PDF размером с нашу картинку
-    var docPDF = new jsPDF(orientation, 'mm', [w, h]);
-    //рисуем картинку на всю страницу
-    docPDF.addImage(image.data, 'JPEG', 0, 0);
+    let docPDF = new jsPDF(orientation, 'mm', [w, h]);
 
-    //Сохраням полученный файл
-    //Возможные значения : dataurl, datauristring, bloburl, blob, arraybuffer, ('save', filename)
+    for (let i = 0; i < $scope.data.length; i++) {
+      if(i) docPDF.addPage();
+
+      $scope.datasetItem = i;
+      $scope.changeCanvas(template);
+      docPDF.addImage(canvas.toDataURL('image/png', quality), 'JPEG', 0, 0);
+
+      // printBackgroundAsync('image/png', quality).then(image => {
+      // });
+
+      // pdfs.push(docPDF.output('save', 'test.pdf'));
+    }
     docPDF.output('save', 'test.pdf');
+
+    // let blobZip = new Blob(pdfs, {type: "application/zip"});
+    
+    // let link = document.createElement('a');
+    // link.download = 'example.zip';
+    // link.href = URL.createObjectURL(blobZip);
+    // link.click();
   };
 
   $scope.loadData = () => {
     fetch($scope.address)
       .then(res => res.json())
       .then(data => $scope.data = data)
-      .then($scope.changeCanvas($scope.activeT));
+      .then(() => {
+        $scope.changeCanvas($scope.activeT);
+      }
+      );
   };
 
   $scope.changeDataset = (step) => {
@@ -214,3 +236,17 @@ myApp.controller('appController', ($rootScope, $scope) => {
     }
   };
 });
+
+
+
+// canvas.toBlob(function(blob) {
+//   // после того, как Blob создан, загружаем его
+//   let link = document.createElement('a');
+//   link.download = 'example.pdf';
+
+//   link.href = URL.createObjectURL(blob);
+//   link.click();
+
+//   // удаляем внутреннюю ссылку на Blob, что позволит браузеру очистить память
+//   URL.revokeObjectURL(link.href);
+// }, 'application/pdf');
