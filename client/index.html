@@ -25,6 +25,7 @@
 
           <div class="bg-dark mt-2 p-1 rounded" ng-if="curTemplate.name === temp.name">
             <div class="mx-auto my-1 custom-file">
+              <!-- <input type="file" name="file" onchange="angular.element(this).scope().loadBackground(this.files)"/> -->
               <input type="file" class="custom-file-input" id="imageFile" ng-click="loadBackground()">
               <label class="custom-file-label" for="customFile">Выбрать файл</label>
             </div>
@@ -83,7 +84,6 @@
             <form>
               <div class="form-group">
                 <label for="recipient-name" class="col-form-label">Введите API сайта с данными:</label>
-                <!-- <input type="text" class="form-control" id="message-text"> -->
                 <input type="text" ng-model="address" class="form-control" id="message-text"
                   placeholder="API адрес данных">
               </div>

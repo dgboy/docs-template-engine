@@ -19,8 +19,7 @@ myApp.controller('appController', ($scope) => {
       // "background": null,
       "width": 793,
       "height": 1122,
-      "elems": [
-        {
+      "elems": [{
           "name": "student",
           "type": "text",
           "value": "",
@@ -51,8 +50,7 @@ myApp.controller('appController', ($scope) => {
       "background": "charter.jpg",
       "width": 793,
       "height": 1122,
-      "elems": [
-        {
+      "elems": [{
           "type": "label",
           "value": "Грамотой награждается",
           "x": 10,
@@ -71,8 +69,7 @@ myApp.controller('appController', ($scope) => {
       "background": null,
       "width": 793,
       "height": 1122,
-      "elems": [
-        {
+      "elems": [{
           "type": "label",
           "value": "Министерство образования Нижегородской области",
           "x": 200,
@@ -118,6 +115,7 @@ myApp.controller('appController', ($scope) => {
     }
   ];
   $scope.curTemplate = null;
+  $scope.data = null;
 
   let сonvertPxToMM = px => Math.floor(px * 0.264583);
   // let convertMmToPx = mm => Math.floor(mm / 0.264583);
@@ -165,7 +163,10 @@ myApp.controller('appController', ($scope) => {
     canvas.height = template.height;
     context.clearRect(0, 0, canvas.width, canvas.height);
 
-    if (template.background) {
+    if (template.tempBG) {
+      context.drawImage(template.tempBG, 0, 0, template.tempBG.width, template.tempBG.height);
+      printElements(template.elems, $scope.datasetItem);
+    } else if(template.background) {
       printBackgroundAsync(imagePath + template.background)
         .then(img => {
           context.drawImage(img, 0, 0, template.width, template.height);
@@ -187,7 +188,7 @@ myApp.controller('appController', ($scope) => {
 
   $scope.changeDataset = (step) => {
     console.log($scope.data.length + " :L = C: " + $scope.datasetItem);
-    if($scope.datasetItem + step >= 0 && $scope.datasetItem + step < $scope.data.length) {
+    if ($scope.datasetItem + step >= 0 && $scope.datasetItem + step < $scope.data.length) {
       $scope.datasetItem += step;
       $scope.changeCanvas($scope.curTemplate);
       // $scope.apply();
@@ -203,8 +204,8 @@ myApp.controller('appController', ($scope) => {
 
     return new Promise((resolve, reject) => {
       setTimeout(() => {
-          docPDF.addImage(canvas.toDataURL('image/png', quality), 'JPEG', 0, 0);
-          resolve(docPDF);
+        docPDF.addImage(canvas.toDataURL('image/png', quality), 'JPEG', 0, 0);
+        resolve(docPDF);
       }, 100);
     });
   };
@@ -226,30 +227,29 @@ myApp.controller('appController', ($scope) => {
         });
     };
 
-    zip.generateAsync({type:'blob'}).then(content => {
+    zip.generateAsync({
+      type: 'blob'
+    }).then(content => {
       saveAs(content, 'docs.zip');
     });
   };
 
-  // $scope.loadBackground = (template) => {
-  // };
+  $scope.loadBackground = (files) => {
+    const handleImage = (e) => {
+      var reader = new FileReader();
+      reader.onload = function(event){
+        var img = new Image();
   
-  // const imageLoader = document.getElementById('imageFile');
-  // imageLoader.addEventListener('change', handleImage, false);
+        img.onload = () => {
+          $scope.curTemplate.tempBG = img;
+          $scope.changeCanvas($scope.curTemplate);
+        }
+        img.src = event.target.result;
+      }
+      reader.readAsDataURL(e.target.files[0]);
+    }
 
-  // const handleImage = (e) => {
-  //   var reader = new FileReader();
-  //   reader.onload = function(event){
-  //     var img = new Image();
-
-  //     img.onload = function(){
-  //       $scope.curTemplate.background = img.src;
-  //       $scope.changeCanvas($scope.curTemplate);
-  //     }
-  //     img.src = event.target.result;
-  //   }
-
-  //   reader.readAsDataURL(e.target.files[0]);
-  // }
-  
+    const imageLoader = document.getElementById('imageFile');
+    imageLoader.addEventListener('change', handleImage, false);
+  };
 });
