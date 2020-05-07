@@ -117,10 +117,10 @@ myApp.controller('appController', ($scope) => {
       ]
     }
   ];
+  $scope.curTemplate = null;
 
   let сonvertPxToMM = px => Math.floor(px * 0.264583);
-  let convertMmToPx = mm => Math.floor(mm / 0.264583);
-
+  // let convertMmToPx = mm => Math.floor(mm / 0.264583);
   let printElements = (elems, item) => {
     for (let i = 0; i < elems.length; i++) {
       const element = elems[i];
@@ -139,7 +139,6 @@ myApp.controller('appController', ($scope) => {
       }
     }
   };
-
   let printBackgroundAsync = async (src) => {
     return new Promise((resolve, reject) => {
       let img = new Image();
@@ -149,32 +148,22 @@ myApp.controller('appController', ($scope) => {
     });
   };
 
-  let loadImageAsync = async (type, quality) => {
-    return new Promise((resolve, reject) => {
-      resolve(canvas.toDataURL(type, quality));
-      // img.onerror = reject;
-    });
-  };
-
 
   $scope.chooseTemplate = (template) => {
     // $scope.data = null;
-    $scope.activeT = template;
+    $scope.curTemplate = template;
+    $scope.changeCanvas(template);
 
-    $scope.templates.forEach(template => {
-      if (template.name === $scope.activeT.name) {
-        $scope.changeCanvas(template);
-      }
-    });
+    // $scope.templates.forEach(template => {
+    //   if (template.name === $scope.curTemplate.name) {
+    //   }
+    // });
   };
 
   $scope.changeCanvas = (template) => {
     canvas.width = template.width;
     canvas.height = template.height;
     context.clearRect(0, 0, canvas.width, canvas.height);
-
-    // console.log("Need: " + convertMmToPx(210) + "x" + convertMmToPx(297));
-    // console.log("Have: " + сonvertPxToMM(canvas.width) + "x" + сonvertPxToMM(canvas.height));
 
     if (template.background) {
       printBackgroundAsync(imagePath + template.background)
@@ -192,88 +181,54 @@ myApp.controller('appController', ($scope) => {
       .then(res => res.json())
       .then(data => $scope.data = data)
       .then(() => {
-        $scope.changeCanvas($scope.activeT);
+        $scope.changeCanvas($scope.curTemplate);
       });
-      // console.log($routeParams.id);
   };
 
   $scope.changeDataset = (step) => {
     console.log($scope.data.length + " :L = C: " + $scope.datasetItem);
     if($scope.datasetItem + step >= 0 && $scope.datasetItem + step < $scope.data.length) {
       $scope.datasetItem += step;
-      $scope.changeCanvas($scope.activeT);
+      $scope.changeCanvas($scope.curTemplate);
       // $scope.apply();
     }
   };
 
-  $scope.createPDF = (template) => {
-    const quality = 1; // качество от 0 до 1, заодно и сжать можно
+  let createPDF = async () => {
+    const quality = 1;
     let w = сonvertPxToMM(canvas.width);
     let h = сonvertPxToMM(canvas.height);
     let orientation = w > h ? 'l' : 'p';
-
     let docPDF = new jsPDF(orientation, 'mm', [w, h]);
 
-    docPDF.addImage(canvas.toDataURL('image/png', quality), 'JPEG', 0, 0);
+    return new Promise((resolve, reject) => {
+      setTimeout(() => {
+          docPDF.addImage(canvas.toDataURL('image/png', quality), 'JPEG', 0, 0);
+          resolve(docPDF);
+      }, 100);
+    });
+  };
 
+  $scope.createDocs = async () => {
     let zip = new JSZip();
 
-    angular.forEach($scope.data, function (item) {
-      try {
-        zip.file(item.student + '.pdf', docPDF.output('blob'));
-      } catch {
-        console.error('Something went wrong!');
-      }
-    });
+    for (let item = 0; item < $scope.data.length; item++) {
+      $scope.datasetItem = item;
+      $scope.changeCanvas($scope.curTemplate);
 
-    zip.generateAsync({type:'blob'}).then(function(content) {
+      await createPDF()
+        .then((docPDF) => {
+          try {
+            zip.file($scope.data[item].student + '.pdf', docPDF.output('blob'));
+          } catch {
+            console.error('Something went wrong!');
+          }
+        });
+    };
+
+    zip.generateAsync({type:'blob'}).then(content => {
       saveAs(content, 'docs.zip');
     });
-
-
-
-    // for (let i = 0; i < $scope.data.length; i++) {
-      // if(i) docPDF.addPage();
-
-      // $scope.datasetItem = i;
-      // $scope.changeCanvas(template);
-      
-      // printBackgroundAsync('image/png', quality).then(image => {
-        // });
-        
-        // pdfs.push(docPDF.output('save', 'test.pdf'));
-        // }
-        // docPDF.output('save', 'test.pdf');
-
-    // zip.add("Hello.txt", "Hello World\n");
-    // img = zip.folder("images");
-    // zip.add(docPDF, {base64: true});
-    // content = zip.generate();
-
-    // let link = document.createElement('a');
-    // link.href = "data:application/zip;base64," + content;
-    // link.click();
-    
-    // location.href="data:application/zip;base64,"+content;
-
-    // urls.forEach(function(url){
-    //   var filename = "filename";
-    //   // loading a file and add it in a zip file
-    //   JSZipUtils.getBinaryContent(url, function (err, data) {
-    //      if(err) {
-    //         throw err; // or handle the error
-    //      }
-    //      zip.file(filename, data, {binary:true});
-    //      count++;
-    //      if (count == urls.length) {
-    //        var zipFile = zip.generate({type: "blob"});
-    //        saveAs(zipFile, zipFilename);
-    //      }
-    //   });
-    // });
-    // link.download = 'example.zip';
-    // let blobZip = new Blob(pdfs, {type: "application/zip"});
-    
   };
 
   // $scope.loadBackground = (template) => {
@@ -288,8 +243,8 @@ myApp.controller('appController', ($scope) => {
   //     var img = new Image();
 
   //     img.onload = function(){
-  //       $scope.activeT.background = img.src;
-  //       $scope.changeCanvas($scope.activeT);
+  //       $scope.curTemplate.background = img.src;
+  //       $scope.changeCanvas($scope.curTemplate);
   //     }
   //     img.src = event.target.result;
   //   }
