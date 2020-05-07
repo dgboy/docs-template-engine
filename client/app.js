@@ -15,8 +15,8 @@ myApp.controller('appController', ($scope) => {
   $scope.templates = [
     {
       "name": "Титульный лист диплома",
-      // "background": "diplom-title.jpg",
-      "background": null,
+      "background": "diplom-title.jpg",
+      // "background": null,
       "width": 793,
       "height": 1122,
       "elems": [
@@ -158,6 +158,7 @@ myApp.controller('appController', ($scope) => {
 
 
   $scope.chooseTemplate = (template) => {
+    // $scope.data = null;
     $scope.activeT = template;
 
     $scope.templates.forEach(template => {
@@ -186,67 +187,114 @@ myApp.controller('appController', ($scope) => {
     }
   };
 
-  $scope.createPDF = (template) => {
-    const quality = 1; // качество от 0 до 1, заодно и сжать можно
-    // let pdfs = [];
-    let w = сonvertPxToMM(canvas.width);
-    let h = сonvertPxToMM(canvas.height);
-    let orientation = w > h ? 'l' : 'p';
-
-    let docPDF = new jsPDF(orientation, 'mm', [w, h]);
-
-    for (let i = 0; i < $scope.data.length; i++) {
-      if(i) docPDF.addPage();
-
-      $scope.datasetItem = i;
-      $scope.changeCanvas(template);
-      docPDF.addImage(canvas.toDataURL('image/png', quality), 'JPEG', 0, 0);
-
-      // printBackgroundAsync('image/png', quality).then(image => {
-      // });
-
-      // pdfs.push(docPDF.output('save', 'test.pdf'));
-    }
-    docPDF.output('save', 'test.pdf');
-
-    // let blobZip = new Blob(pdfs, {type: "application/zip"});
-    
-    // let link = document.createElement('a');
-    // link.download = 'example.zip';
-    // link.href = URL.createObjectURL(blobZip);
-    // link.click();
-  };
-
   $scope.loadData = () => {
     fetch($scope.address)
       .then(res => res.json())
       .then(data => $scope.data = data)
       .then(() => {
         $scope.changeCanvas($scope.activeT);
-      }
-      );
+      });
+      // console.log($routeParams.id);
   };
 
   $scope.changeDataset = (step) => {
     console.log($scope.data.length + " :L = C: " + $scope.datasetItem);
-
     if($scope.datasetItem + step >= 0 && $scope.datasetItem + step < $scope.data.length) {
       $scope.datasetItem += step;
       $scope.changeCanvas($scope.activeT);
+      // $scope.apply();
     }
   };
+
+  $scope.createPDF = (template) => {
+    const quality = 1; // качество от 0 до 1, заодно и сжать можно
+    let w = сonvertPxToMM(canvas.width);
+    let h = сonvertPxToMM(canvas.height);
+    let orientation = w > h ? 'l' : 'p';
+
+    let docPDF = new jsPDF(orientation, 'mm', [w, h]);
+
+    docPDF.addImage(canvas.toDataURL('image/png', quality), 'JPEG', 0, 0);
+
+    let zip = new JSZip();
+
+    angular.forEach($scope.data, function (item) {
+      try {
+        zip.file(item.student + '.pdf', docPDF.output('blob'));
+      } catch {
+        console.error('Something went wrong!');
+      }
+    });
+
+    zip.generateAsync({type:'blob'}).then(function(content) {
+      saveAs(content, 'docs.zip');
+    });
+
+
+
+    // for (let i = 0; i < $scope.data.length; i++) {
+      // if(i) docPDF.addPage();
+
+      // $scope.datasetItem = i;
+      // $scope.changeCanvas(template);
+      
+      // printBackgroundAsync('image/png', quality).then(image => {
+        // });
+        
+        // pdfs.push(docPDF.output('save', 'test.pdf'));
+        // }
+        // docPDF.output('save', 'test.pdf');
+
+    // zip.add("Hello.txt", "Hello World\n");
+    // img = zip.folder("images");
+    // zip.add(docPDF, {base64: true});
+    // content = zip.generate();
+
+    // let link = document.createElement('a');
+    // link.href = "data:application/zip;base64," + content;
+    // link.click();
+    
+    // location.href="data:application/zip;base64,"+content;
+
+    // urls.forEach(function(url){
+    //   var filename = "filename";
+    //   // loading a file and add it in a zip file
+    //   JSZipUtils.getBinaryContent(url, function (err, data) {
+    //      if(err) {
+    //         throw err; // or handle the error
+    //      }
+    //      zip.file(filename, data, {binary:true});
+    //      count++;
+    //      if (count == urls.length) {
+    //        var zipFile = zip.generate({type: "blob"});
+    //        saveAs(zipFile, zipFilename);
+    //      }
+    //   });
+    // });
+    // link.download = 'example.zip';
+    // let blobZip = new Blob(pdfs, {type: "application/zip"});
+    
+  };
+
+  // $scope.loadBackground = (template) => {
+  // };
+  
+  // const imageLoader = document.getElementById('imageFile');
+  // imageLoader.addEventListener('change', handleImage, false);
+
+  // const handleImage = (e) => {
+  //   var reader = new FileReader();
+  //   reader.onload = function(event){
+  //     var img = new Image();
+
+  //     img.onload = function(){
+  //       $scope.activeT.background = img.src;
+  //       $scope.changeCanvas($scope.activeT);
+  //     }
+  //     img.src = event.target.result;
+  //   }
+
+  //   reader.readAsDataURL(e.target.files[0]);
+  // }
+  
 });
-
-
-
-// canvas.toBlob(function(blob) {
-//   // после того, как Blob создан, загружаем его
-//   let link = document.createElement('a');
-//   link.download = 'example.pdf';
-
-//   link.href = URL.createObjectURL(blob);
-//   link.click();
-
-//   // удаляем внутреннюю ссылку на Blob, что позволит браузеру очистить память
-//   URL.revokeObjectURL(link.href);
-// }, 'application/pdf');

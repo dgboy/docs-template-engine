@@ -15,7 +15,7 @@
     </nav>
 
     <div class="row justify-content-around">
-      <div class="col-3">
+      <div class="col-3 bg-success">
         <!-- <input type="text" ng-model="address" class="form-control" placeholder="API адрес данных"> -->
         <!-- <button class="btn btn-info mx-auto my-2" ng-click="loadData()">Загрузить...</button> -->
         <ul class="list-group mt-1">
@@ -27,15 +27,45 @@
             <button type="button" class="btn btn-warning mx-auto my-1" data-toggle="modal" data-target="#exampleModal"
                     data-whatever="@mdo" ng-if="activeT.name === template.name">Загрузить...</button>
             <button class="btn btn-success mx-auto my-1" ng-click="createPDF(template)" ng-if="activeT.name === template.name">PDF</button>
+            <!-- <input type="file" id="imageFile" ng-click="loadBackground(template)"> -->
+            <!-- <button class="btn btn-dark mx-auto my-1" ng-if="activeT.name === template.name" id="imageFile">
+              <svg class="bi bi-image" width="1em" height="1em" viewBox="0 0 16 16" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                <path fill-rule="evenodd" d="M14.002 2h-12a1 1 0 00-1 1v10a1 1 0 001 1h12a1 1 0 001-1V3a1 1 0 00-1-1zm-12-1a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V3a2 2 0 00-2-2h-12z" clip-rule="evenodd"/>
+                <path d="M10.648 7.646a.5.5 0 01.577-.093L15.002 9.5V14h-14v-2l2.646-2.354a.5.5 0 01.63-.062l2.66 1.773 3.71-3.71z"/>
+                <path fill-rule="evenodd" d="M4.502 7a1.5 1.5 0 100-3 1.5 1.5 0 000 3z" clip-rule="evenodd"/>
+              </svg>
+            </button> -->
+            <div class="custom-file" ng-if="activeT.name === template.name">
+              <input type="file" class="custom-file-input" id="imageFile" ng-click="loadBackground(template)">
+              <label class="custom-file-label" for="customFile">Выбрать файл</label>
+            </div>
           </li>
         </ul>
       </div>
 
-      <div>
-        <canvas class="" id="canvas" width="800px" height="496px">
+      <div class="col bg-danger">
+        <canvas class="mx-auto" id="canvas" width="800px" height="496px">
           <p>Ваш браузер не поддерживает элемент canvas!</p>
         </canvas>
+        <div class="row">
+          <div class="mx-auto">
+            <button class="mb-1 btn btn-secondary" data-slide="prev" ng-click="changeDataset(-1)">Предыдущий</button>
+            <button class="mb-1 btn btn-secondary" data-slide="next" ng-click="changeDataset(1)">Следующий</button>
+          </div>
+          <!-- ng-show="data" -->
+
+          <!-- <nav class="mx-auto" aria-label="dataset" ng-show="data">
+            <ul class="pagination">
+              <li class="page-item"><a class="page-link" href="#">Previous</a></li>
+              <li class="page-item"><a class="page-link" href="/#!/1">1</a></li>
+              <li class="page-item"><a class="page-link" href="/#!/2">2</a></li>
+              <li class="page-item"><a class="page-link" href="/#!/3">3</a></li>
+              <li class="page-item"><a class="page-link" href="#">Next</a></li>
+            </ul>
+          </nav> -->
+        </div>
       </div>
+
       
       <!-- <div class="col-1 mx-auto my-auto" ng-if="!vm.error && !vm.list.length">
         <div class="spinner-border text-secondary" role="status">
@@ -76,18 +106,6 @@
       </div>
     </div>
 
-    <div class="row col-9 float-right">
-      <button class="carousel-control-prev" data-slide="prev" ng-click="changeDataset(-1)">
-        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-        <span class="sr-only">Previous</span>
-      </button>
-      <!-- ng-show="data" -->
-      <button class="carousel-control-next" data-slide="next" ng-click="changeDataset(1)">
-        <span class="carousel-control-next-icon" aria-hidden="true"></span>
-        <span class="sr-only">Next</span>
-      </button>
-    </div>
-
     <footer class="card-footer text-muted bg-dark my-2">
       <div class="text-center">&copy; 2020, Daniil Gorbunov</div>
     </footer>
@@ -99,6 +117,8 @@
     <script src="lib/angular/angular.min.js"></script>
     <script src="lib/angular/angular-route.min.js"></script>
     <script src="lib/jspdf/jspdf.min.js"></script>
+    <script src="lib/jszip/jszip.js"></script>
+    <script src="lib/FileSaver.js"></script>
 
     <script src="app.js"></script>
 </body>
