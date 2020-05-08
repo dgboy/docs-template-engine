@@ -23,16 +23,15 @@
 
           <div>{{temp.name}}</div>
 
-          <div class="bg-dark mt-2 p-1 rounded" ng-if="curTemplate.name === temp.name">
+          <div class="mt-2 p-1" ng-if="curTemplate.name === temp.name">
             <div class="mx-auto my-1 custom-file">
-              <!-- <input type="file" name="file" onchange="angular.element(this).scope().loadBackground(this.files)"/> -->
               <input type="file" class="custom-file-input" id="imageFile" ng-click="loadBackground()">
-              <label class="custom-file-label" for="customFile">Выбрать файл</label>
+              <label class="custom-file-label" for="imageFile">Загрузить фон...</label>
             </div>
 
             <button class="mx-auto btn btn-warning my-1" data-toggle="modal" data-target="#modal">Загрузить данные...</button>
 
-            <button class="btn btn-success my-1" ng-click="createDocs()">Создать экземпляры</button>
+            <button class="btn btn-success my-1" ng-click="createDocs()" >Создать экземпляры</button>
           </div>
         </li>
       </ul>
@@ -86,6 +85,7 @@
                 <label for="recipient-name" class="col-form-label">Введите API сайта с данными:</label>
                 <input type="text" ng-model="address" class="form-control" id="message-text"
                   placeholder="API адрес данных">
+                <label class="col-form-label">Пример: http://localhost:3000/api/data</label>
               </div>
               <!-- <div class="form-group">
                   <label for="message-text" class="col-form-label">Или загрузите JSON-файл:</label>
