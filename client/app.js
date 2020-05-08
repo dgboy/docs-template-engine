@@ -311,7 +311,7 @@ myApp.controller('appController', ($scope) => {
   }
 
   $scope.chooseTemplate = (template) => {
-    $scope.data = null;
+    // $scope.data = null;
     $scope.curTemplate = template;
     $scope.changeCanvas(template);
 
