@@ -10,7 +10,6 @@ const imagePath = "images/";
 
 
 myApp.controller('appController', ($scope) => {
-  // $scope.dataAddress = "";
   $scope.datasetItem = 0;
   $scope.templates = [
     {
@@ -312,7 +311,7 @@ myApp.controller('appController', ($scope) => {
   }
 
   $scope.chooseTemplate = (template) => {
-    // $scope.data = null;
+    $scope.data = null;
     $scope.curTemplate = template;
     $scope.changeCanvas(template);
 
@@ -361,16 +360,17 @@ myApp.controller('appController', ($scope) => {
   };
 
   $scope.loadData = () => {
+    // console.log($scope.address);
     fetch($scope.address)
       .then(res => res.json())
-      .then(data => $scope.data = data)
-      .then(() => {
+      .then(data => {
+        $scope.data = data;
         $scope.changeCanvas($scope.curTemplate);
       });
   };
 
   $scope.changeDataset = (step) => {
-    console.log($scope.data.length + " :L = C: " + $scope.datasetItem);
+    // console.log($scope.data.length + " :L = C: " + $scope.datasetItem);
     if ($scope.datasetItem + step >= 0 && $scope.datasetItem + step < $scope.data.length) {
       $scope.datasetItem += step;
       $scope.changeCanvas($scope.curTemplate);

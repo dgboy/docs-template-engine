@@ -134,12 +134,33 @@ const getData = (req, res) => {
   ];
   res.json(data);
 };
+const getDataGramota = (req, res) => {
+  let data = [
+    {
+      "member": "Горбунов Даниил Павлович",
+      "date": "5 мая 2020г.",
+      "leader": "Жуков Виталий Климович",
+    },
+    {
+      "member": "Левин Иван Петрович",
+      "date": "5 мая 2020г.",
+      "leader": "Жуков Виталий Климович",
+    },
+    {
+      "member": "Лесков Иван Иванович",
+      "date": "5 мая 2020г.",
+      "leader": "Жуков Виталий Климович",
+    }
+  ];
+  res.json(data);
+};
 const convertingToPdf = (req, res) => {
   res.end("PDF!");
 };
 
 router.get('/templates', getTemplates);
 router.get('/data', getData);
+router.get('/gramota', getDataGramota);
 router.get('/converting', convertingToPdf);
 
 app.use('/api', router);
