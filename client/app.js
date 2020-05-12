@@ -6,8 +6,24 @@ const context = canvas.getContext("2d");
 const w = canvas.width;
 const h = canvas.height;
 
-const imagePath = "images/";
+canvas.onmousedown = myDown;
+canvas.onmouseup = myUp;
+canvas.onmousemove = myMove;
 
+const imagePath = "images/";
+let temp = null;
+
+let сonvertPxToMM = px => Math.floor(px * 0.264583);
+let convertMmToPx = mm => Math.floor(mm / 0.264583);
+
+let printBackgroundAsync = async (src) => {
+  return new Promise((resolve, reject) => {
+    let img = new Image();
+    img.src = src;
+    img.onload = () => resolve(img);
+    img.onerror = reject;
+  });
+};
 
 myApp.controller('appController', ($scope) => {
   $scope.datasetItem = 0;
@@ -17,6 +33,12 @@ myApp.controller('appController', ($scope) => {
       "background": null,
       "width": 793,
       "height": 1122,
+      "offsets": {
+        "left": 113,
+        "right": 56,
+        "top": 75,
+        "bottom": 75
+      },
       "elems": {
         "labels": [{
             "name": "org",
@@ -30,6 +52,13 @@ myApp.controller('appController', ($scope) => {
             "value": "Государственное бюджетное профессиональное образовательное учреждение «Нижегородский радиотехнический колледж»",
             "x": 50,
             "y": 80,
+            "font": 20
+          },
+          {
+            "name": "sss",
+            "value": "Проверка!",
+            "x": 0,
+            "y": 0,
             "font": 20
           },
           {
@@ -125,6 +154,12 @@ myApp.controller('appController', ($scope) => {
       "background": "charter.jpg",
       "width": 793,
       "height": 1122,
+      "offsets": {
+        "left": 113,
+        "right": 56,
+        "top": 75,
+        "bottom": 75
+      },
       "elems": {
         "labels": [{
             "name": "header",
@@ -193,6 +228,12 @@ myApp.controller('appController', ($scope) => {
       // "background": null,
       "width": 793,
       "height": 1122,
+      "offsets": {
+        "left": 113,
+        "right": 56,
+        "top": 75,
+        "bottom": 75
+      },
       "elems": {
         "text": [
           {
@@ -223,65 +264,59 @@ myApp.controller('appController', ($scope) => {
   $scope.curTemplate = null;
   $scope.data = null;
 
-  let сonvertPxToMM = px => Math.floor(px * 0.264583);
-  // let convertMmToPx = mm => Math.floor(mm / 0.264583);
+  let printOffsets = (offsets) => {
+    context.beginPath();
+    context.setLineDash([10, 10]);
 
-  // let printElementsR = (elems, item) => {
-  //   for (let i = 0; i < elems.length; i++) {
-  //     const element = elems[i];
-  //     context.font = `${element.font}px Times New Roman`;
-  //     context.fillStyle = "black";
+    // top
+    context.moveTo(0, offsets.top);
+    context.lineTo(w, offsets.top);
+    // bottom
+    context.moveTo(0, h - offsets.bottom);
+    context.lineTo(w, h - offsets.bottom);
+    // left
+    context.moveTo(offsets.left, 0);
+    context.lineTo(offsets.left, h);
+    // right
+    context.moveTo(w - offsets.right, 0);
+    context.lineTo(w - offsets.right, h);
 
-  //     if (element.type === "text") {
-  //       if ($scope.data) {
-  //         element.value = $scope.data[item][element.name];
-  //       } else {
-  //         context.fillStyle = "red";
-  //         element.value = element.name;
-  //       }
+    context.stroke();
+  }
 
-  //       context.fillText(element.value, element.x, element.y);
-  //     }
-  //   }
-  // };
 
-  let printElements = (elems, item) => {
-    let element;
+  let printElements = (elems, offsets, item) => {
+    const shift = 5;
+    let el;
+
+    printOffsets(offsets);
 
     if (elems.labels) {
       for (let i = 0; i < elems.labels.length; i++) {
-        element = elems.labels[i];
-        context.font = `${element.font}px Times New Roman`;
+        el = elems.labels[i];
+        context.font = `${el.font}px Times New Roman`;
         context.fillStyle = "black";
-        context.fillText(element.value, element.x, element.y);
+        context.fillText(el.value, offsets.left + el.x, offsets.top + el.y + el.font - shift);
+        // context.fillText(el.value, el.x, el.y);
       }
     }
 
     if(elems.text) {
       for (let i = 0; i < elems.text.length; i++) {
-        element = elems.text[i];
+        el = elems.text[i];
         
-        if ($scope.data || !element) {
-          context.font = `${element.font}px Times New Roman`;
+        if ($scope.data || !el) {
+          context.font = `${el.font}px Times New Roman`;
           context.fillStyle = "black";
-          element.value = $scope.data[item][element.name];
+          el.value = $scope.data[item][el.name];
         } else {
-          context.font = `20px Verdana`;
+          context.font = `${el.font}px Times New Roman`;
           context.fillStyle = "red";
-          element.value = element.name;
+          el.value = el.name;
         }
-  
-        context.fillText(element.value, element.x, element.y);
+        context.fillText(el.value, offsets.left + el.x, offsets.top + el.y + el.font - shift);
       }
     }
-  };
-  let printBackgroundAsync = async (src) => {
-    return new Promise((resolve, reject) => {
-      let img = new Image();
-      img.src = src;
-      img.onload = () => resolve(img);
-      img.onerror = reject;
-    });
   };
   let getLines = (phrase, maxPxLength, textStyle) => {
     var wa = phrase.split(" "),
@@ -311,9 +346,12 @@ myApp.controller('appController', ($scope) => {
   }
 
   $scope.chooseTemplate = (template) => {
-    // $scope.data = null;
-    $scope.curTemplate = template;
-    $scope.changeCanvas(template);
+    if($scope.curTemplate !== template) {
+      $scope.data = null;
+      $scope.curTemplate = template;
+      temp = template;
+      $scope.changeCanvas(template);
+    }
 
     // $scope.templates.forEach(template => {
     //   if (template.name === $scope.curTemplate.name) {
@@ -322,21 +360,19 @@ myApp.controller('appController', ($scope) => {
   };
 
   $scope.changeCanvas = (template) => {
-    canvas.width = template.width;
-    canvas.height = template.height;
     context.clearRect(0, 0, canvas.width, canvas.height);
 
     if (template.tempBG) {
       context.drawImage(template.tempBG, 0, 0, template.tempBG.width, template.tempBG.height);
-      printElements(template.elems, $scope.datasetItem);
+      printElements(template.elems, template.offsets, $scope.datasetItem);
     } else if (template.background) {
       printBackgroundAsync(imagePath + template.background)
         .then(img => {
           context.drawImage(img, 0, 0, template.width, template.height);
-          printElements(template.elems, $scope.datasetItem);
+          printElements(template.elems, template.offsets, $scope.datasetItem);
         });
     } else {
-      printElements(template.elems, $scope.datasetItem);
+      printElements(template.elems, template.offsets, $scope.datasetItem);
     }
   };
 

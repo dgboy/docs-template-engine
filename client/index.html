@@ -9,12 +9,27 @@
   <title>Шаблонизатор документов</title>
 </head>
 
-<body class="col-11 mx-auto" ng-controller="appController">
+<body ng-controller="appController">
   <nav class="navbar navbar-dark bg-dark mb-2">
     <span class="nav-title mx-auto navbar-brand font-weight-bold">Шаблонизатор документов</span>
   </nav>
 
-  <div class="row justify-content-around">
+  <div class="row justify-content-between">
+    <canvas class="" id="canvas" width="793px" height="1122px">
+      <p>Ваш браузер не поддерживает элемент canvas!</p>
+    </canvas>
+      <!-- ng-show="data" -->
+
+      <!-- <nav class="mx-auto" aria-label="dataset" ng-show="data">
+          <ul class="pagination">
+            <li class="page-item"><a class="page-link" href="#">Previous</a></li>
+            <li class="page-item"><a class="page-link" href="/#!/1">1</a></li>
+            <li class="page-item"><a class="page-link" href="/#!/2">2</a></li>
+            <li class="page-item"><a class="page-link" href="/#!/3">3</a></li>
+            <li class="page-item"><a class="page-link" href="#">Next</a></li>
+          </ul>
+        </nav> -->
+
     <div class="col-3">
       <h1 class="header">Шаблоны</h1>
       <ul class="list-group mt-1">
@@ -35,30 +50,6 @@
           </div>
         </li>
       </ul>
-    </div>
-
-    <div class="col">
-      <canvas class="mx-auto" id="canvas" width="793px" height="1122px">
-        <p>Ваш браузер не поддерживает элемент canvas!</p>
-      </canvas>
-
-      <div class="row">
-        <div class="mx-auto">
-          <button class="mb-1 btn btn-secondary" data-slide="prev" ng-click="changeDataset(-1)">Предыдущий</button>
-          <button class="mb-1 btn btn-secondary" data-slide="next" ng-click="changeDataset(1)">Следующий</button>
-        </div>
-      </div>
-      <!-- ng-show="data" -->
-
-      <!-- <nav class="mx-auto" aria-label="dataset" ng-show="data">
-          <ul class="pagination">
-            <li class="page-item"><a class="page-link" href="#">Previous</a></li>
-            <li class="page-item"><a class="page-link" href="/#!/1">1</a></li>
-            <li class="page-item"><a class="page-link" href="/#!/2">2</a></li>
-            <li class="page-item"><a class="page-link" href="/#!/3">3</a></li>
-            <li class="page-item"><a class="page-link" href="#">Next</a></li>
-          </ul>
-        </nav> -->
     </div>
 
 
@@ -104,6 +95,13 @@
     </div>
   </div>
 
+  <div class="row">
+    <div class="col-6 mx-auto">
+      <button class="mb-1 btn btn-secondary" data-slide="prev" ng-click="changeDataset(-1)">Предыдущий</button>
+      <button class="mb-1 btn btn-secondary" data-slide="next" ng-click="changeDataset(1)">Следующий</button>
+    </div>
+  </div>
+
   <footer class="card-footer text-muted bg-dark my-2">
     <div class="text-center">&copy; 2020, Daniil Gorbunov</div>
   </footer>
@@ -119,6 +117,7 @@
   <script src="lib/jszip.js"></script>
   <script src="lib/FileSaver.js"></script>
 
+  <script src="mouse.js"></script>
   <script src="app.js"></script>
 </body>
 
