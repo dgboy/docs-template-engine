@@ -18,46 +18,36 @@
     <canvas class="" id="canvas" width="793px" height="1122px">
       <p>Ваш браузер не поддерживает элемент canvas!</p>
     </canvas>
-      <!-- ng-show="data" -->
-
-      <!-- <nav class="mx-auto" aria-label="dataset" ng-show="data">
-          <ul class="pagination">
-            <li class="page-item"><a class="page-link" href="#">Previous</a></li>
-            <li class="page-item"><a class="page-link" href="/#!/1">1</a></li>
-            <li class="page-item"><a class="page-link" href="/#!/2">2</a></li>
-            <li class="page-item"><a class="page-link" href="/#!/3">3</a></li>
-            <li class="page-item"><a class="page-link" href="#">Next</a></li>
-          </ul>
-        </nav> -->
 
     <div class="col-3">
       <h1 class="header">Шаблоны</h1>
+      
       <ul class="list-group mt-1">
-        <li class="list-group-item list-group-item-action" ng-repeat="temp in templates"
-          ng-class="{active : curTemplate.name === temp.name}" ng-click="chooseTemplate(temp)">
+        <li class="list-group-item list-group-item-action" ng-repeat="t in templates"
+          ng-class="{active : curTemplate.name === t.name}" ng-click="chooseTemplate(t)">
 
-          <div>{{temp.name}}</div>
+          <div>{{t.name}}</div>
 
-          <div class="mt-2 p-1" ng-if="curTemplate.name === temp.name">
+          <div class="p-1" ng-if="curTemplate.name === t.name">
+            <hr>
             <div class="mx-auto my-1 custom-file">
-              <input type="file" class="custom-file-input" id="imageFile" ng-click="loadBackground()">
+              <input type="file" class="custom-file-input" id="imageFile" ng-click="loadBackground(t)">
               <label class="custom-file-label" for="imageFile">Загрузить фон...</label>
             </div>
 
             <button class="mx-auto btn btn-warning my-1" data-toggle="modal" data-target="#modal">Загрузить данные...</button>
 
-            <button class="btn btn-success my-1" ng-click="createDocs()" >Создать экземпляры</button>
+            <div class="row justify-content-between">
+              <button class="mr-1 btn btn-secondary" data-slide="prev" ng-click="changeDataset(-1)"><</button>
+              <span class="p-1">Текущий набор: 0</span>
+              <button class="mr-1 btn btn-secondary" data-slide="next" ng-click="changeDataset(1)">></button>
+            </div>
+
+            <button class="btn btn-success my-1" ng-click="createDocs(t)" >Создать экземпляры</button>
           </div>
         </li>
       </ul>
     </div>
-
-
-    <!-- <div class="col-1 mx-auto my-auto" ng-if="!vm.error && !vm.list.length">
-        <div class="spinner-border text-secondary" role="status">
-          <span class="sr-only">Подождите немножко...</span>
-        </div>
-      </div> -->
 
     <div class="modal fade" id="modal" tabindex="-1" role="dialog" aria-labelledby="modalLabel"
       aria-hidden="true">
@@ -95,13 +85,6 @@
     </div>
   </div>
 
-  <div class="row">
-    <div class="col-6 mx-auto">
-      <button class="mb-1 btn btn-secondary" data-slide="prev" ng-click="changeDataset(-1)">Предыдущий</button>
-      <button class="mb-1 btn btn-secondary" data-slide="next" ng-click="changeDataset(1)">Следующий</button>
-    </div>
-  </div>
-
   <footer class="card-footer text-muted bg-dark my-2">
     <div class="text-center">&copy; 2020, Daniil Gorbunov</div>
   </footer>
@@ -117,7 +100,8 @@
   <script src="lib/jszip.js"></script>
   <script src="lib/FileSaver.js"></script>
 
-  <script src="mouse.js"></script>
+  <script src="templates.js"></script>
+  <script src="helpers.js"></script>
   <script src="app.js"></script>
 </body>
 

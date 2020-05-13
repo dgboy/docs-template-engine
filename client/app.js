@@ -6,268 +6,87 @@ const context = canvas.getContext("2d");
 const w = canvas.width;
 const h = canvas.height;
 
-canvas.onmousedown = myDown;
-canvas.onmouseup = myUp;
-canvas.onmousemove = myMove;
-
 const imagePath = "images/";
 let temp = null;
 
-let сonvertPxToMM = px => Math.floor(px * 0.264583);
-let convertMmToPx = mm => Math.floor(mm / 0.264583);
-
-let printBackgroundAsync = async (src) => {
-  return new Promise((resolve, reject) => {
-    let img = new Image();
-    img.src = src;
-    img.onload = () => resolve(img);
-    img.onerror = reject;
-  });
+var mouse = {
+  x: 0,
+  y: 0
 };
+
+// var editMode = true;
+var dragging = false;
+var draggingElem = null;
+const elemsType = ["labels", "text"];
+
 
 myApp.controller('appController', ($scope) => {
   $scope.datasetItem = 0;
-  $scope.templates = [
-    {
-      "name": "Титульный лист отчёта",
-      "background": null,
-      "width": 793,
-      "height": 1122,
-      "offsets": {
-        "left": 113,
-        "right": 56,
-        "top": 75,
-        "bottom": 75
-      },
-      "elems": {
-        "labels": [{
-            "name": "org",
-            "value": "Министерство образования Нижегородской области",
-            "x": 200,
-            "y": 50,
-            "font": 20
-          },
-          {
-            "name": "college",
-            "value": "Государственное бюджетное профессиональное образовательное учреждение «Нижегородский радиотехнический колледж»",
-            "x": 50,
-            "y": 80,
-            "font": 20
-          },
-          {
-            "name": "sss",
-            "value": "Проверка!",
-            "x": 0,
-            "y": 0,
-            "font": 20
-          },
-          {
-            "name": "discipline",
-            "value": "ОП.05 Основы программирования",
-            "x": 200,
-            "y": 250,
-            "font": 20
-          },
-          {
-            "name": "header",
-            "value": "ОТЧЁТ",
-            "x": 320,
-            "y": 400,
-            "font": 26
-          },
-          {
-            "name": "theme",
-            "value": "по лабораторной работе № 1 Тема 'Двухмерные массивы'",
-            "x": 130,
-            "y": 430,
-            "font": 20
-          },
-          {
-            "name": "label",
-            "value": "Выполнил:",
-            "x": 50,
-            "y": 810,
-            "font": 20
-          },
-          {
-            "name": "label",
-            "value": "ученик группы",
-            "x": 50,
-            "y": 835,
-            "font": 20
-          },
-          {
-            "name": "label",
-            "value": "Проверил:",
-            "x": 500,
-            "y": 810,
-            "font": 20
-          },
-          {
-            "name": "label",
-            "value": "преподаватель",
-            "x": 500,
-            "y": 835,
-            "font": 20
-          },
-          {
-            "name": "city",
-            "value": "г.Нижний Новгород",
-            "x": 320,
-            "y": 1030,
-            "font": 20
-          },
-          {
-            "name": "year",
-            "value": "2020г.",
-            "x": 380,
-            "y": 1060,
-            "font": 20
-          }
-        ],
-        "text": [{
-            "name": "student",
-            "value": "",
-            "x": 50,
-            "y": 860,
-            "font": 20
-          },
-          {
-            "name": "group",
-            "value": "",
-            "x": 180,
-            "y": 835,
-            "font": 20
-          },
-          {
-            "name": "teacher",
-            "value": "",
-            "x": 500,
-            "y": 860,
-            "font": 20
-          }
-        ]
-      }
-    },
-    {
-      "name": "Грамота",
-      "background": "charter.jpg",
-      "width": 793,
-      "height": 1122,
-      "offsets": {
-        "left": 113,
-        "right": 56,
-        "top": 75,
-        "bottom": 75
-      },
-      "elems": {
-        "labels": [{
-            "name": "header",
-            "value": "НАГРАЖДАЕТСЯ",
-            "x": 230,
-            "y": 380,
-            "font": 40
-          },
-          {
-            "name": "city",
-            "value": "За ловкость, силу и сноровку,\
-              Упорный труд на тренировках,\
-              За собранность, стальные нервы,\
-              И за стремление быть первым,\
-              За мужество и за терпенье,\
-              Талант, напор и вдохновение\
-              И за прекрасный результат,\
-              Который лучше всех наград!\
-            ",
-            "x": 250,
-            "y": 440,
-            "font": 20
-          },
-          {
-            "name": "date",
-            "value": "Приказ №125 от",
-            "x": 200,
-            "y": 900,
-            "font": 20
-          },
-          {
-            "name": "ruk",
-            "value": "Руководитель",
-            "x": 200,
-            "y": 930,
-            "font": 20
-          }
-        ],
-        "text": [{
-            "name": "member",
-            "value": "",
-            "x": 350,
-            "y": 410,
-            "font": 20
-          },
-          {
-            "name": "date",
-            "value": "",
-            "x": 345,
-            "y": 900,
-            "font": 20
-          },
-          {
-            "name": "leader",
-            "value": "",
-            "x": 320,
-            "y": 930,
-            "font": 20
-          }
-        ]
-      }
-    },
-    {
-      "name": "Титульный лист диплома",
-      "background": "diplom-title.jpg",
-      // "background": null,
-      "width": 793,
-      "height": 1122,
-      "offsets": {
-        "left": 113,
-        "right": 56,
-        "top": 75,
-        "bottom": 75
-      },
-      "elems": {
-        "text": [
-          {
-            "name": "student",
-            "value": "",
-            "x": 140,
-            "y": 855,
-            "font": 20
-          },
-          {
-            "name": "group",
-            "value": "",
-            "x": 160,
-            "y": 833,
-            "font": 20
-          },
-          {
-            "name": "teacher",
-            "value": "",
-            "x": 480,
-            "y": 835,
-            "font": 20
-          }
-        ]
-      }
-    }
-  ];
+  $scope.templates = templates;
   $scope.curTemplate = null;
   $scope.data = null;
 
-  let printOffsets = (offsets) => {
-    context.beginPath();
-    context.setLineDash([10, 10]);
 
+  const myDown = (event) => {
+    mouse.x = event.pageX - canvas.offsetLeft;
+    mouse.y = event.pageY - canvas.offsetTop;
+
+    for (let i = 0; i < elemsType.length; i++) {
+      for (let j = 0; j < temp.elems[elemsType[i]].length; j++) {
+        const el = temp.elems[elemsType[i]][j];
+
+        let x = temp.offsets.left + el.x;
+        let y = temp.offsets.top + el.y;
+
+        const text = {
+          w: context.measureText(el.value).width,
+          h: el.font
+        };
+
+        if (mouse.x >= x && mouse.x <= x + text.w && mouse.y >= y && mouse.y <= y + text.h) {
+          dragging = true;
+          draggingElem = {
+            type: elemsType[i],
+            id: j,
+            shift: {
+              x: mouse.x - x,
+              y: mouse.y - y
+            }
+          };
+          $scope.changeCanvas(temp);
+        }
+      }
+    }
+  };
+
+  const myMove = (event) => {
+    if (dragging === true) {
+      mouse.x = event.pageX - canvas.offsetLeft;
+      mouse.y = event.pageY - canvas.offsetTop;
+
+      temp.elems[draggingElem.type][draggingElem.id].x = mouse.x - temp.offsets.left - draggingElem.shift.x;
+      temp.elems[draggingElem.type][draggingElem.id].y = mouse.y - temp.offsets.top - draggingElem.shift.y;
+  
+      $scope.changeCanvas(temp);
+    }
+  };
+
+  const myUp = (event) => {
+    dragging = false;
+    draggingElem = null;
+    $scope.changeCanvas(temp);
+  };
+
+  canvas.onmousedown = myDown;
+  canvas.onmouseup = myUp;
+  canvas.onmousemove = myMove;
+
+
+  const drawOffsets = (offsets) => {
+    context.beginPath();
+    context.fillStyle = "lightgray";
+    context.setLineDash([10, 10]);
+  
     // top
     context.moveTo(0, offsets.top);
     context.lineTo(w, offsets.top);
@@ -280,77 +99,88 @@ myApp.controller('appController', ($scope) => {
     // right
     context.moveTo(w - offsets.right, 0);
     context.lineTo(w - offsets.right, h);
-
+  
     context.stroke();
-  }
+  };
 
+  const drawSelection = (el, offsets) => {
+    let x = offsets.left + el.x;
+    let y = offsets.top + el.y;
 
-  let printElements = (elems, offsets, item) => {
+    context.fillStyle = "rgba(100, 150, 185, 0.1)";
+    context.font = `${el.font}px Times New Roman`;
+    context.setLineDash([5, 5]);
+
+    const text = {
+      w: context.measureText(el.value).width,
+      h: el.font
+    };
+
+    context.fillRect(x, y, text.w, text.h);
+    context.strokeRect(x, y, text.w, text.h);
+  };
+
+  const drawElements = (elems, offsets, item) => {
+    const elemsType = ["labels", "text"];
     const shift = 5;
     let el;
 
-    printOffsets(offsets);
 
-    if (elems.labels) {
-      for (let i = 0; i < elems.labels.length; i++) {
-        el = elems.labels[i];
+    for (let i = 0; i < elemsType.length; i++) {
+      for (let j = 0; elems[elemsType[i]] && j < elems[elemsType[i]].length; j++) {
+        const el = elems[elemsType[i]][j];
+
+        if (dragging) {
+          drawSelection(elems[draggingElem.type][draggingElem.id], offsets);
+        }
+
         context.font = `${el.font}px Times New Roman`;
         context.fillStyle = "black";
-        context.fillText(el.value, offsets.left + el.x, offsets.top + el.y + el.font - shift);
-        // context.fillText(el.value, el.x, el.y);
-      }
-    }
 
-    if(elems.text) {
-      for (let i = 0; i < elems.text.length; i++) {
-        el = elems.text[i];
-        
-        if ($scope.data || !el) {
-          context.font = `${el.font}px Times New Roman`;
-          context.fillStyle = "black";
+        if (elemsType[i] === "text") {
+          if ($scope.data) {
           el.value = $scope.data[item][el.name];
-        } else {
-          context.font = `${el.font}px Times New Roman`;
-          context.fillStyle = "red";
-          el.value = el.name;
+          } else {
+            context.fillStyle = "red";
+            el.value = el.name;
+          }
         }
+
         context.fillText(el.value, offsets.left + el.x, offsets.top + el.y + el.font - shift);
       }
     }
   };
-  let getLines = (phrase, maxPxLength, textStyle) => {
-    var wa = phrase.split(" "),
-      phraseArray = [],
-      lastPhrase = wa[0],
-      measure = 0,
-      splitChar = " ";
-    if (wa.length <= 1) {
-      return wa
-    }
-    context.font = textStyle;
-    for (var i = 1; i < wa.length; i++) {
-      var w = wa[i];
-      measure = context.measureText(lastPhrase + splitChar + w).width;
-      if (measure < maxPxLength) {
-        lastPhrase += (splitChar + w);
-      } else {
-        phraseArray.push(lastPhrase);
-        lastPhrase = w;
-      }
-      if (i === wa.length - 1) {
-        phraseArray.push(lastPhrase);
-        break;
-      }
-    }
-    return phraseArray;
-  }
+
+  const createPDF = async () => {
+    const quality = 1;
+    let w = сonvertPxToMM(canvas.width);
+    let h = сonvertPxToMM(canvas.height);
+    let orientation = w > h ? 'l' : 'p';
+    let docPDF = new jsPDF(orientation, 'mm', [w, h]);
+
+    return new Promise((resolve, reject) => {
+      setTimeout(() => {
+        docPDF.addImage(canvas.toDataURL('image/png', quality), 'JPEG', 0, 0);
+        resolve(docPDF);
+      }, 100);
+    });
+  };
 
   $scope.chooseTemplate = (template) => {
     if($scope.curTemplate !== template) {
       $scope.data = null;
       $scope.curTemplate = template;
       temp = template;
-      $scope.changeCanvas(template);
+
+      if (template.background) {
+        loadImageAsync(imagePath + template.background)
+          .then(img => {
+            template.background = img;
+            $scope.changeCanvas(template);
+          });
+      } else {
+        $scope.changeCanvas(template);
+      }
     }
 
     // $scope.templates.forEach(template => {
@@ -359,35 +189,34 @@ myApp.controller('appController', ($scope) => {
     // });
   };
 
-  $scope.changeCanvas = (template) => {
-    context.clearRect(0, 0, canvas.width, canvas.height);
+  $scope.changeCanvas = (template, editMode=true) => {
+    context.clearRect(0, 0, w, h);
 
-    if (template.tempBG) {
-      context.drawImage(template.tempBG, 0, 0, template.tempBG.width, template.tempBG.height);
-      printElements(template.elems, template.offsets, $scope.datasetItem);
-    } else if (template.background) {
-      printBackgroundAsync(imagePath + template.background)
-        .then(img => {
-          context.drawImage(img, 0, 0, template.width, template.height);
-          printElements(template.elems, template.offsets, $scope.datasetItem);
-        });
-    } else {
-      printElements(template.elems, template.offsets, $scope.datasetItem);
+    if (template.background) {
+      context.drawImage(template.background, 0, 0, w, h);
+    }
+
+    drawElements(template.elems, template.offsets, $scope.datasetItem);
+
+    if (editMode) {
+      drawOffsets(template.offsets);
     }
   };
 
-  $scope.loadBackground = (files) => {
+  $scope.loadBackground = (template) => {
     const handleImage = (e) => {
-      var reader = new FileReader();
-      reader.onload = function (event) {
-        var img = new Image();
+      let reader = new FileReader();
+      
+      reader.onload = (event) => {
+        let img = new Image();
 
         img.onload = () => {
-          $scope.curTemplate.tempBG = img;
-          $scope.changeCanvas($scope.curTemplate);
-        }
+          template.background = img;
+          $scope.changeCanvas(template);
+        };
+
         img.src = event.target.result;
-      }
+      };
       reader.readAsDataURL(e.target.files[0]);
     }
 
@@ -414,56 +243,17 @@ myApp.controller('appController', ($scope) => {
     }
   };
 
-  let createPDF = async () => {
-    const quality = 1;
-    let w = сonvertPxToMM(canvas.width);
-    let h = сonvertPxToMM(canvas.height);
-    let orientation = w > h ? 'l' : 'p';
-    let docPDF = new jsPDF(orientation, 'mm', [w, h]);
-
-    return new Promise((resolve, reject) => {
-      setTimeout(() => {
-        docPDF.addImage(canvas.toDataURL('image/png', quality), 'JPEG', 0, 0);
-        resolve(docPDF);
-      }, 100);
-    });
-  };
-
-  let createPDF2 = () => {
-    const quality = 1;
-    let w = сonvertPxToMM(canvas.width);
-    let h = сonvertPxToMM(canvas.height);
-    let orientation = w > h ? 'l' : 'p';
-    let docPDF = new jsPDF(orientation, 'mm', [w, h]);
-
-    for (let i = 0; i < $scope.curTemplate.elems.labels.length; i++) {
-      const element = $scope.curTemplate.elems.labels[i];
-      docPDF.text(element.value, 0, element.y, {
-        lang: 'ru'
-      });
-    }
-
-    for (let i = 0; i < $scope.curTemplate.elems.text.length; i++) {
-      const element = $scope.curTemplate.elems.text[i];
-      docPDF.text(element.value, element.x, element.y, {
-        lang: 'ru'
-      });
-    }
-
-    return docPDF;
-  };
-
-  $scope.createDocs = async () => {
+  $scope.createDocs = async (template) => {
     let zip = new JSZip();
 
     for (let item = 0; item < $scope.data.length; item++) {
       $scope.datasetItem = item;
-      $scope.changeCanvas($scope.curTemplate);
+      $scope.changeCanvas(template, false);
 
       await createPDF()
         .then((docPDF) => {
           try {
-            zip.file($scope.curTemplate.name + " " + (item + 1) + '.pdf', docPDF.output('blob'));
+            zip.file(template.name + " " + (item + 1) + '.pdf', docPDF.output('blob'));
           } catch {
             console.error('Something went wrong!');
           }
