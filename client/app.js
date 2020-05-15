@@ -7,7 +7,6 @@ const w = canvas.width;
 const h = canvas.height;
 
 const imagePath = "images/";
-// let temp = null;
 
 var mouse = {
   x: 0,
@@ -28,25 +27,32 @@ myApp.controller('appController', ($scope) => {
   $scope.data = null;
 
 
-  const myDown = (event) => {
+  const mouseDown = (event) => {
+    const t = $scope.curTemplate;
+
     mouse.x = event.pageX - canvas.offsetLeft;
     mouse.y = event.pageY - canvas.offsetTop;
 
     for (let i = 0; i < elemsType.length; i++) {
-      for (let j = 0; j < $scope.curTemplate.elems[elemsType[i]].length; j++) {
-        const el = $scope.curTemplate.elems[elemsType[i]][j];
+      for (let j = 0; j < t.elems[elemsType[i]].length; j++) {
+        const el = t.elems[elemsType[i]][j];
 
-        let x = $scope.curTemplate.offsets.left + el.x;
-        let y = $scope.curTemplate.offsets.top + el.y;
+        let x = t.offsets.left + el.x;
+        let y = t.offsets.top + el.y;
+
+        const lines = getLines(el.value, w - (t.offsets.left + t.offsets.right + el.x));
+        const width = getWidthLongString(lines);
 
         const text = {
-          w: context.measureText(el.value).width,
-          h: el.font
+          w: width,
+          h: el.font * lines.length
         };
-
+        
         if (mouse.x >= x && mouse.x <= x + text.w && mouse.y >= y && mouse.y <= y + text.h) {
+          // this.style.cursor = 'pointer';
           dragging = true;
           selected = !selected;
+
           dragElem = {
             type: elemsType[i],
             id: j,
@@ -55,14 +61,14 @@ myApp.controller('appController', ($scope) => {
               y: mouse.y - y
             }
           };
-          $scope.changeCanvas($scope.curTemplate);
+          $scope.changeCanvas(t);
         }
       }
     }
   };
 
-  const myMove = (event) => {
-    
+  const mouseMove = (event) => {
+    const shift = 4;
     if (dragging === true) {
       const t = $scope.curTemplate;
       const el = t.elems[dragElem.type][dragElem.id];
@@ -70,26 +76,24 @@ myApp.controller('appController', ($scope) => {
       mouse.x = event.pageX - canvas.offsetLeft;
       mouse.y = event.pageY - canvas.offsetTop;
       
-      
       const lines = getLines(el.value, w - (t.offsets.left + t.offsets.right + el.x));
       const width = getWidthLongString(lines);
       const startElemX = mouse.x - dragElem.shift.x;
       const startElemY = mouse.y - dragElem.shift.y;
 
-      if (!el.align && startElemX >= t.offsets.left && startElemX + width <= w - t.offsets.right) {
+      if (!el.align && startElemX >= t.offsets.left && startElemX + width < w - t.offsets.right + shift) {
         el.x = mouse.x - t.offsets.left - dragElem.shift.x;
       }
 
-      if (startElemY >= t.offsets.top && startElemY + el.font <= h - t.offsets.top) {
+      if (startElemY >= t.offsets.top && startElemY + el.font < h - t.offsets.top) {
         el.y = mouse.y - t.offsets.top - dragElem.shift.y;
       }
-      
-  
+
       $scope.changeCanvas(t);
     }
   };
 
-  const myUp = (event) => {
+  const mouseUp = (event) => {
     dragging = false;
 
     if (!selected) {
@@ -99,9 +103,9 @@ myApp.controller('appController', ($scope) => {
     $scope.changeCanvas($scope.curTemplate);
   };
 
-  canvas.onmousedown = myDown;
-  canvas.onmouseup = myUp;
-  canvas.onmousemove = myMove;
+  canvas.onmousedown = mouseDown;
+  canvas.onmouseup = mouseUp;
+  canvas.onmousemove = mouseMove;
 
 
   const drawOffsets = (offsets) => {
@@ -234,30 +238,24 @@ myApp.controller('appController', ($scope) => {
     if($scope.curTemplate !== template) {
       $scope.data = null;
       $scope.curTemplate = template;
-      // temp = template;
 
-      if (template.background) {
-        loadImageAsync(imagePath + template.background)
+      if (template.background.path) {
+        loadImageAsync(imagePath + template.background.path)
           .then(img => {
-            template.background = img;
+            template.background.img = img;
             $scope.changeCanvas(template);
           });
       } else {
         $scope.changeCanvas(template);
       }
     }
-
-    // $scope.templates.forEach(template => {
-    //   if (template.name === $scope.curTemplate.name) {
-    //   }
-    // });
   };
 
   $scope.changeCanvas = (template, editMode=true) => {
     context.clearRect(0, 0, w, h);
 
-    if (template.background) {
-      context.drawImage(template.background, 0, 0, w, h);
+    if (template.background.img) {
+      context.drawImage(template.background.img, 0, 0, w, h);
     }
 
     drawElements(template.elems, template.offsets, $scope.datasetItem);
@@ -275,7 +273,7 @@ myApp.controller('appController', ($scope) => {
         let img = new Image();
 
         img.onload = () => {
-          template.background = img;
+          template.background.img = img;
           $scope.changeCanvas(template);
         };
 

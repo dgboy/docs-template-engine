@@ -1,7 +1,9 @@
 const templates = [
   {
     "name": "Титульный лист отчёта",
-    "background": null,
+    "background": {
+      "path": null
+    },
     "width": 793,
     "height": 1122,
     "offsets": {
@@ -111,7 +113,9 @@ const templates = [
   },
   {
     "name": "Грамота",
-    "background": "charter.jpg",
+    "background": {
+      "path": "charter.jpg"
+    },
     "width": 793,
     "height": 1122,
     "offsets": {
@@ -180,7 +184,9 @@ const templates = [
   },
   {
     "name": "Титульный лист диплома",
-    "background": "diplom-title.jpg",
+    "background": {
+      "path": "diplom-title.jpg"
+    },
     "width": 793,
     "height": 1122,
     "offsets": {

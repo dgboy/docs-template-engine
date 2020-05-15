@@ -10,14 +10,11 @@
 </head>
 
 <body ng-controller="appController">
-  <nav class="navbar navbar-dark bg-dark mb-2">
+  <nav class="navbar navbar-dark bg-dark mb-2 row">
     <span class="nav-title mx-auto navbar-brand font-weight-bold">Шаблонизатор документов</span>
   </nav>
 
   <div class="row justify-content-between">
-    <canvas class="" id="canvas" width="793px" height="1122px">
-      <p>Ваш браузер не поддерживает элемент canvas!</p>
-    </canvas>
 
     <div class="col-3">
       <h1 class="header">Шаблоны</h1>
@@ -48,6 +45,10 @@
         </li>
       </ul>
     </div>
+
+    <canvas class="" id="canvas" width="793px" height="1122px">
+      <p>Ваш браузер не поддерживает элемент canvas!</p>
+    </canvas>
 
     <div class="modal fade" id="modal" tabindex="-1" role="dialog" aria-labelledby="modalLabel"
       aria-hidden="true">
@@ -85,7 +86,7 @@
     </div>
   </div>
 
-  <footer class="card-footer text-muted bg-dark my-2">
+  <footer class="card-footer text-muted bg-dark my-2 row">
     <div class="text-center">&copy; 2020, Daniil Gorbunov</div>
   </footer>
 
