@@ -42,6 +42,21 @@ const getLines = (text, maxLen) => {
   return lines;
 };
 
+const getWidthLongString = (strings) => {
+  let idLongStr = 0;
+
+  for (let i = 1; i < strings.length; i++) {
+    const longTemp = context.measureText(strings[idLongStr]).width;
+    const element = context.measureText(strings[i]).width;
+
+    if(longTemp < element) {
+      idLongStr = i;
+    }
+  }
+
+  return context.measureText(strings[idLongStr]).width;
+};
+
 
 // if (dragok) {
 //   var mx = parseInt(e.clientX - offsetX);

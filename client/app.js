@@ -7,7 +7,7 @@ const w = canvas.width;
 const h = canvas.height;
 
 const imagePath = "images/";
-let temp = null;
+// let temp = null;
 
 var mouse = {
   x: 0,
@@ -18,7 +18,7 @@ var mouse = {
 const elemsType = ["labels", "text"];
 let dragging = false;
 let selected = false;
-let draggingElem = null;
+let dragElem = null;
 
 
 myApp.controller('appController', ($scope) => {
@@ -33,11 +33,11 @@ myApp.controller('appController', ($scope) => {
     mouse.y = event.pageY - canvas.offsetTop;
 
     for (let i = 0; i < elemsType.length; i++) {
-      for (let j = 0; j < temp.elems[elemsType[i]].length; j++) {
-        const el = temp.elems[elemsType[i]][j];
+      for (let j = 0; j < $scope.curTemplate.elems[elemsType[i]].length; j++) {
+        const el = $scope.curTemplate.elems[elemsType[i]][j];
 
-        let x = temp.offsets.left + el.x;
-        let y = temp.offsets.top + el.y;
+        let x = $scope.curTemplate.offsets.left + el.x;
+        let y = $scope.curTemplate.offsets.top + el.y;
 
         const text = {
           w: context.measureText(el.value).width,
@@ -47,7 +47,7 @@ myApp.controller('appController', ($scope) => {
         if (mouse.x >= x && mouse.x <= x + text.w && mouse.y >= y && mouse.y <= y + text.h) {
           dragging = true;
           selected = !selected;
-          draggingElem = {
+          dragElem = {
             type: elemsType[i],
             id: j,
             shift: {
@@ -55,21 +55,37 @@ myApp.controller('appController', ($scope) => {
               y: mouse.y - y
             }
           };
-          $scope.changeCanvas(temp);
+          $scope.changeCanvas($scope.curTemplate);
         }
       }
     }
   };
 
   const myMove = (event) => {
+    
     if (dragging === true) {
+      const t = $scope.curTemplate;
+      const el = t.elems[dragElem.type][dragElem.id];
+
       mouse.x = event.pageX - canvas.offsetLeft;
       mouse.y = event.pageY - canvas.offsetTop;
+      
+      
+      const lines = getLines(el.value, w - (t.offsets.left + t.offsets.right + el.x));
+      const width = getWidthLongString(lines);
+      const startElemX = mouse.x - dragElem.shift.x;
+      const startElemY = mouse.y - dragElem.shift.y;
 
-      temp.elems[draggingElem.type][draggingElem.id].x = mouse.x - temp.offsets.left - draggingElem.shift.x;
-      temp.elems[draggingElem.type][draggingElem.id].y = mouse.y - temp.offsets.top - draggingElem.shift.y;
+      if (!el.align && startElemX >= t.offsets.left && startElemX + width <= w - t.offsets.right) {
+        el.x = mouse.x - t.offsets.left - dragElem.shift.x;
+      }
+
+      if (startElemY >= t.offsets.top && startElemY + el.font <= h - t.offsets.top) {
+        el.y = mouse.y - t.offsets.top - dragElem.shift.y;
+      }
+      
   
-      $scope.changeCanvas(temp);
+      $scope.changeCanvas(t);
     }
   };
 
@@ -77,10 +93,10 @@ myApp.controller('appController', ($scope) => {
     dragging = false;
 
     if (!selected) {
-      draggingElem = null;
+      dragElem = null;
     }
 
-    $scope.changeCanvas(temp);
+    $scope.changeCanvas($scope.curTemplate);
   };
 
   canvas.onmousedown = myDown;
@@ -117,21 +133,11 @@ myApp.controller('appController', ($scope) => {
     context.font = `${el.font}px Times New Roman`;
     context.setLineDash([5, 5]);
 
-    const substrs = getLines(el.value, w - (offsets.left + offsets.right + el.x));
-    let idLongStr = 0;
-
-    for (let i = 1; i < substrs.length; i++) {
-      const longTemp = context.measureText(substrs[idLongStr]).width;
-      const element = context.measureText(substrs[i]).width;
-
-      if(longTemp < element) {
-        idLongStr = i;
-      }
-    }
+    const lines = getLines(el.value, w - (offsets.left + offsets.right + el.x));
 
     const text = {
-      w: context.measureText(substrs[idLongStr]).width,
-      h: el.font * substrs.length
+      w: getWidthLongString(lines),
+      h: el.font * lines.length
     };
 
     context.fillRect(x, y, text.w, text.h);
@@ -174,7 +180,7 @@ myApp.controller('appController', ($scope) => {
         // x = offsets.left + el.x;
 
         if (dragging || selected) {
-          drawSelection(elems[draggingElem.type][draggingElem.id], offsets);
+          drawSelection(elems[dragElem.type][dragElem.id], offsets);
           // drawMenu(elems[draggingElem.type][draggingElem.id]);
         }
 
@@ -228,7 +234,7 @@ myApp.controller('appController', ($scope) => {
     if($scope.curTemplate !== template) {
       $scope.data = null;
       $scope.curTemplate = template;
-      temp = template;
+      // temp = template;
 
       if (template.background) {
         loadImageAsync(imagePath + template.background)
