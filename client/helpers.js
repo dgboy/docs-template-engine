@@ -11,31 +11,35 @@ const loadImageAsync = async (src) => {
   });
 };
 
-const getLines = (phrase, maxPxLength, textStyle) => {
-  var wa = phrase.split(" "),
-    phraseArray = [],
-    lastPhrase = wa[0],
-    measure = 0,
-    splitChar = " ";
-  if (wa.length <= 1) {
-    return wa
+const getLines = (text, maxLen) => {
+  let words = text.split(" ");
+  let lastWord = words[0];
+  let splitChar = " ";
+  let lines = [];
+
+  if (words.length <= 1) {
+    return words;
   }
-  context.font = textStyle;
-  for (var i = 1; i < wa.length; i++) {
-    var w = wa[i];
-    measure = context.measureText(lastPhrase + splitChar + w).width;
-    if (measure < maxPxLength) {
-      lastPhrase += (splitChar + w);
+  
+  for (let i = 1; i < words.length; i++) {
+    let w = words[i];
+
+    let width = context.measureText(lastWord + splitChar + w).width;
+
+    if (width < maxLen) {
+      lastWord += (splitChar + w);
     } else {
-      phraseArray.push(lastPhrase);
-      lastPhrase = w;
+      lines.push(lastWord);
+      lastWord = w;
     }
-    if (i === wa.length - 1) {
-      phraseArray.push(lastPhrase);
+    
+    if (i === words.length - 1) {
+      lines.push(lastWord);
       break;
     }
   }
-  return phraseArray;
+
+  return lines;
 };
 
 

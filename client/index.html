@@ -37,9 +37,9 @@
 
             <button class="mx-auto btn btn-warning my-1" data-toggle="modal" data-target="#modal">Загрузить данные...</button>
 
-            <div class="row justify-content-between">
+            <div class="row justify-content-between" ng-show="data">
               <button class="mr-1 btn btn-secondary" data-slide="prev" ng-click="changeDataset(-1)"><</button>
-              <span class="p-1">Текущий набор: 0</span>
+              <span class="p-1">Текущий набор: {{datasetItem}}</span>
               <button class="mr-1 btn btn-secondary" data-slide="next" ng-click="changeDataset(1)">></button>
             </div>
 

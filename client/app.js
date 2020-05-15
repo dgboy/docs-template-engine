@@ -15,9 +15,10 @@ var mouse = {
 };
 
 // var editMode = true;
-var dragging = false;
-var draggingElem = null;
 const elemsType = ["labels", "text"];
+let dragging = false;
+let selected = false;
+let draggingElem = null;
 
 
 myApp.controller('appController', ($scope) => {
@@ -45,6 +46,7 @@ myApp.controller('appController', ($scope) => {
 
         if (mouse.x >= x && mouse.x <= x + text.w && mouse.y >= y && mouse.y <= y + text.h) {
           dragging = true;
+          selected = !selected;
           draggingElem = {
             type: elemsType[i],
             id: j,
@@ -73,7 +75,11 @@ myApp.controller('appController', ($scope) => {
 
   const myUp = (event) => {
     dragging = false;
-    draggingElem = null;
+
+    if (!selected) {
+      draggingElem = null;
+    }
+
     $scope.changeCanvas(temp);
   };
 
@@ -107,31 +113,69 @@ myApp.controller('appController', ($scope) => {
     let x = offsets.left + el.x;
     let y = offsets.top + el.y;
 
-    context.fillStyle = "rgba(100, 150, 185, 0.1)";
+    context.fillStyle = "rgba(100, 150, 185, 0.05)";
     context.font = `${el.font}px Times New Roman`;
     context.setLineDash([5, 5]);
 
+    const substrs = getLines(el.value, w - (offsets.left + offsets.right + el.x));
+    let idLongStr = 0;
+
+    for (let i = 1; i < substrs.length; i++) {
+      const longTemp = context.measureText(substrs[idLongStr]).width;
+      const element = context.measureText(substrs[i]).width;
+
+      if(longTemp < element) {
+        idLongStr = i;
+      }
+    }
+
     const text = {
-      w: context.measureText(el.value).width,
-      h: el.font
+      w: context.measureText(substrs[idLongStr]).width,
+      h: el.font * substrs.length
     };
 
     context.fillRect(x, y, text.w, text.h);
     context.strokeRect(x, y, text.w, text.h);
   };
 
+  const drawMenu = (el) => {
+    const box = {
+      w: 20,
+      h: 20
+    }
+    const len = 3;
+    const icons = ["<", "=", ">"];
+    const offset = 5;
+
+    context.font = `${el.font}px Times New Roman`;
+    context.setLineDash([]);
+
+    for (let i = 0; i < len; i++) {
+      let shift = i * box.w + offset;
+
+      context.fillStyle = "lightgray";
+      context.fillRect(el.x + shift, el.y + el.font, box.w, box.h);
+      context.strokeRect(el.x + shift, el.y + el.font, box.w, box.h);
+      
+      context.fillStyle = "black";
+      context.fillText(icons[i], el.x + shift, el.y + el.font * 2 - 5, box.w, box.h);
+    }
+  };
+
   const drawElements = (elems, offsets, item) => {
     const elemsType = ["labels", "text"];
     const shift = 5;
-    let el;
-
+    let x;
+    let y;
 
     for (let i = 0; i < elemsType.length; i++) {
       for (let j = 0; elems[elemsType[i]] && j < elems[elemsType[i]].length; j++) {
         const el = elems[elemsType[i]][j];
+        // x = offsets.left + el.x;
 
-        if (dragging) {
+        if (dragging || selected) {
           drawSelection(elems[draggingElem.type][draggingElem.id], offsets);
+          // drawMenu(elems[draggingElem.type][draggingElem.id]);
         }
 
         context.font = `${el.font}px Times New Roman`;
@@ -139,17 +183,30 @@ myApp.controller('appController', ($scope) => {
 
         if (elemsType[i] === "text") {
           if ($scope.data) {
-          el.value = $scope.data[item][el.name];
+            el.value = $scope.data[item][el.name];
           } else {
             context.fillStyle = "red";
             el.value = el.name;
           }
         }
 
-        context.fillText(el.value, offsets.left + el.x, offsets.top + el.y + el.font - shift);
+        if(el.align && el.align === "center") {
+          el.x = (w - context.measureText(el.value).width - offsets.left - offsets.right) / 2;
+        };
+
+        if (context.measureText(el.value).width >= w - (offsets.left + offsets.right + el.x)) {
+          let lines = getLines(el.value, w - (offsets.left + offsets.right + el.x));
+          for (let k = 0; k < lines.length; k++) {
+            const element = lines[k];
+            context.fillText(element, offsets.left + el.x, offsets.top + el.y + el.font - shift + k * el.font);
+          }
+        } else {
+          context.fillText(el.value, offsets.left + el.x, offsets.top + el.y + el.font - shift);
+        }
       }
     }
   };
+
 
   const createPDF = async () => {
     const quality = 1;
@@ -165,6 +222,7 @@ myApp.controller('appController', ($scope) => {
       }, 100);
     });
   };
+
 
   $scope.chooseTemplate = (template) => {
     if($scope.curTemplate !== template) {
