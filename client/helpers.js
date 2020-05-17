@@ -42,19 +42,41 @@ const getLines = (text, maxLen) => {
   return lines;
 };
 
-const getWidthLongString = (strings) => {
+const getWidthLongString = (ctx, strings) => {
   let idLongStr = 0;
 
   for (let i = 1; i < strings.length; i++) {
-    const longTemp = context.measureText(strings[idLongStr]).width;
-    const element = context.measureText(strings[i]).width;
+    const longTemp = ctx.measureText(strings[idLongStr]).width;
+    const element = ctx.measureText(strings[i]).width;
 
     if(longTemp < element) {
       idLongStr = i;
     }
   }
 
-  return context.measureText(strings[idLongStr]).width;
+  return Number(ctx.measureText(strings[idLongStr]).width);
+};
+
+const getNameResizingOffset = (mouse, offsets, cvsW, cvsH) => {
+  const shift = 5;
+
+  if (mouse.x >= offsets.left - shift && mouse.x <= offsets.left + shift) {
+    return "left";
+  }
+
+  if (mouse.x >= cvsW - offsets.right - shift && mouse.x <= cvsW - offsets.right + shift) {
+    return "right";
+  }
+
+  if (mouse.y >= offsets.top - shift && mouse.y <= offsets.top + shift) {
+    return "top";
+  }
+
+  if (mouse.y >= cvsH - offsets.bottom - shift && mouse.y <= cvsH - offsets.bottom + shift) {
+    return "bottom";
+  }
+
+  return null;
 };
 
 
