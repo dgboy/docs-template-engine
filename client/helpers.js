@@ -79,6 +79,116 @@ const getNameResizingOffset = (mouse, offsets, cvsW, cvsH) => {
   return null;
 };
 
+const getDraggingElement = (mouse, elems, offsets, elemsTypes, cvsW) => {
+  for (let i = 0; i < elemsTypes.length; i++) {
+    const type = elemsTypes[i];
+
+    for (let j = 0; j < elems[type].length; j++) {
+      const el = elems[type][j];
+
+      let x = offsets.left + el.x;
+      let y = offsets.top + el.y;
+
+      const lines = getLines(el.value, cvsW - (offsets.left + offsets.right + el.x));
+      const widthLongString = getWidthLongString(context, lines);
+
+      const text = {
+        w: widthLongString,
+        h: el.font * lines.length
+      };
+      
+      if (mouse.x >= x && mouse.x <= x + text.w && mouse.y >= y && mouse.y <= y + text.h) {
+        return {
+          type: type,
+          id: j,
+          shift: {
+            x: mouse.x - x,
+            y: mouse.y - y
+          }
+        };
+      }
+    };
+  };
+
+  return null;
+};
+
+const initButtons = (mouse, aligns, el) => {
+  let fields = ["left", "center", "right"];
+  
+  buttonsAling = ["left", "center", "right"];
+  const box = {
+    w: 20,
+    h: 20
+  }
+  const len = 3;
+  const icons = ["<", "=", ">"];
+  const offset = 5;
+
+  context.font = `${el.font}px Times New Roman`;
+  context.setLineDash([]);
+
+  for (let i = 0; i < buttonsAling.length; i++) {
+    // let 
+    let shift = i * box.w + offset;
+
+    context.fillStyle = el.align === buttonsAling[i] ? "white" : "gray";
+
+    context.fillRect(el.x + shift, el.y + el.font, box.w, box.h);
+    context.strokeRect(el.x + shift, el.y + el.font, box.w, box.h);
+    
+    context.fillStyle = "black";
+    context.fillText(icons[i], el.x + shift + 4, el.y + el.font * 2 - 4, box.w, box.h);
+  }
+
+
+  return null;
+};
+
+const getPressButton = (mouse, aligns, el) => {
+  let fields = ["left", "center", "right"];
+
+
+  // if (el.align && buttons.align[el.align]) {
+  //   return true;
+  // } else {
+  //   return null;
+  // }
+
+
+  for (let i = 0; i < fields.length; i++) {
+    const type = fields[i];
+      
+    if (mouse.x >= el.x && mouse.x <= x + text.w && mouse.y >= y && mouse.y <= y + text.h) {
+      return {
+        type: type,
+        id: j,
+        shift: {
+          x: mouse.x - x,
+          y: mouse.y - y
+        }
+      };
+    }
+
+    for (let j = 0; j < buttons[type].length; j++) {
+      const el = buttons[type][j];
+
+      let x = offsets.left + el.x;
+      let y = offsets.top + el.y;
+
+      const lines = getLines(el.value, cvsW - (offsets.left + offsets.right + el.x));
+      const widthLongString = getWidthLongString(context, lines);
+
+      const text = {
+        w: widthLongString,
+        h: el.font * lines.length
+      };
+    };
+  };
+
+  return null;
+};
+
 
 // if (dragok) {
 //   var mx = parseInt(e.clientX - offsetX);

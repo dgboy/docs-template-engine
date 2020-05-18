@@ -10,6 +10,30 @@ myApp.controller('appController', ($scope) => {
   $scope.curTemplate = null;
   $scope.data = null;
 
+  $scope.selected = false;
+  
+  $scope.aligns = [
+    {
+      name: "left",
+      label: "Слева",
+      icon: "<",
+      active: "false"
+    },
+    {
+      name: "center",
+      label: "Центр",
+      icon: "=",
+      active: "false"
+    },
+    {
+      name: "right",
+      label: "Справа",
+      icon: ">",
+      active: "false"
+    }
+
+  ];
+
   const cvsW = canvas.width;
   const cvsH = canvas.height;
   
@@ -19,17 +43,41 @@ myApp.controller('appController', ($scope) => {
     x: 0,
     y: 0
   };
+  
+  const buttons = {
+    align: {
+      left: {
+        icon: "<"
+      },
+      center: {
+        icon: "="
+      },
+      right: {
+        icon: ">"
+      }
+    },
+    font: {
+      famaly: {
+        icon: "шрифт"
+      },
+      size: {
+        icon: "размер"
+      },
+      color: {
+        icon: "цвет"
+      }
+    },
+  };
 
-  const idElemsType = ["labels", "text"];
-  const idOffsets = ["left", "right", "top", "bottom"];
+  const elemsTypes = ["labels", "text"];
+  // let doff;
   
   let resizing = false;
   let resizeOffset = null;
   
   let dragging = false;
-  let selected = false;
   let dragElem = null;
-
+  // let pressButton = null;
 
   const mouseDown = (event) => {
     const t = $scope.curTemplate;
@@ -40,43 +88,32 @@ myApp.controller('appController', ($scope) => {
     resizeOffset = getNameResizingOffset(mouse, t.offsets, cvsW, cvsH);
 
     if (resizeOffset) {
-      resizing = true;
       canvas.style.cursor = (resizeOffset === "left" || resizeOffset === "right") ? 'col-resize' : 'row-resize';
+      resizing = true;
       $scope.changeCanvas(t);
     }
-    
-    for (let i = 0; i < idElemsType.length; i++) {
-      for (let j = 0; j < t.elems[idElemsType[i]].length; j++) {
-        const el = t.elems[idElemsType[i]][j];
 
-        let x = t.offsets.left + el.x;
-        let y = t.offsets.top + el.y;
+    dragElem = getDraggingElement(mouse, t.elems, t.offsets, elemsTypes, cvsW);
 
-        const lines = getLines(el.value, cvsW - (t.offsets.left + t.offsets.right + el.x));
-        const longWidth = getWidthLongString(context, lines);
+    if (dragElem) {
+      canvas.style.cursor = 'move';
+      dragging = true;
+      
+      $scope.$apply(() => {
+        $scope.selected = !$scope.selected;
+        t.selectedElem = t.elems[dragElem.type][dragElem.id];
 
-        const text = {
-          w: longWidth,
-          h: el.font * lines.length
+        for (let i = 0; i < $scope.aligns.length; i++) {
+          if (t.selectedElem.align === $scope.aligns[i].name) {
+            $scope.aligns[i].active = true;
+          } else {
+            $scope.aligns[i].active = false;
+          }
         };
         
-        if (mouse.x >= x && mouse.x <= x + text.w && mouse.y >= y && mouse.y <= y + text.h) {
-          canvas.style.cursor = 'move';
-          dragging = true;
-          selected = !selected;
-
-          dragElem = {
-            type: idElemsType[i],
-            id: j,
-            shift: {
-              x: mouse.x - x,
-              y: mouse.y - y
-            }
-          };
-
-          $scope.changeCanvas(t);
-        }
-      }
+      });
+      
+      $scope.changeCanvas(t);
     }
   };
 
@@ -93,18 +130,22 @@ myApp.controller('appController', ($scope) => {
       const freeSpaceH = cvsH / 8;
 
       if (resizeOffset === "left" && mouse.x >= 0 && mouse.x <= freeSpaceW) {
+        // doff = mouse.x - t.offsets.left;
         t.offsets.left = mouse.x;
       }
 
       if (resizeOffset === "right" && mouse.x >= cvsW - freeSpaceW && mouse.x <= cvsW) {
+        // doff = cvsW - mouse.x - t.offsets.right;
         t.offsets.right = cvsW - mouse.x;
       }
       
       if (resizeOffset === "top" && mouse.y >= 0 && mouse.y <= freeSpaceH) {
+        // doff = mouse.y - t.offsets.top;
         t.offsets.top = mouse.y;
       }
 
       if (resizeOffset === "bottom" && mouse.y >= cvsH - freeSpaceH && mouse.y <= cvsH) {
+        // doff = cvsH - mouse.y - t.offsets.bottom;
         t.offsets.bottom = cvsH - mouse.y;
       }
 
@@ -142,7 +183,7 @@ myApp.controller('appController', ($scope) => {
     resizeOffset = null;
     
     dragging = false;
-    if (!selected) {
+    if (!$scope.selected) {
       dragElem = null;
     }
 
@@ -195,6 +236,7 @@ myApp.controller('appController', ($scope) => {
   };
 
   const drawMenu = (el) => {
+    buttonsAling = ["left", "center", "right"];
     const box = {
       w: 20,
       h: 20
@@ -206,15 +248,17 @@ myApp.controller('appController', ($scope) => {
     context.font = `${el.font}px Times New Roman`;
     context.setLineDash([]);
 
-    for (let i = 0; i < len; i++) {
+    for (let i = 0; i < buttonsAling.length; i++) {
+      // let 
       let shift = i * box.w + offset;
 
-      context.fillStyle = "lightgray";
+      context.fillStyle = el.align === buttonsAling[i] ? "white" : "gray";
+
       context.fillRect(el.x + shift, el.y + el.font, box.w, box.h);
       context.strokeRect(el.x + shift, el.y + el.font, box.w, box.h);
       
       context.fillStyle = "black";
-      context.fillText(icons[i], el.x + shift, el.y + el.font * 2 - 5, box.w, box.h);
+      context.fillText(icons[i], el.x + shift + 4, el.y + el.font * 2 - 4, box.w, box.h);
     }
   };
 
@@ -244,15 +288,15 @@ myApp.controller('appController', ($scope) => {
         let lines = getLines(el.value, cvsW - (offsets.left + offsets.right + el.x));
         const width = getWidthLongString(context, lines);
 
-        if (dragging || selected) {
-          // drawSelection(elems[dragElem.type][dragElem.id], offsets);
-          // drawMenu(elems[draggingElem.type][draggingElem.id]);
-        }
-
         if (offsets.left + el.x + width > cvsW - offsets.right) {
           el.x -= offsets.left + el.x + width - (cvsW - offsets.right);
         }
         
+        
+        // if (resizing && offsets.top < el.y) {
+        //   el.y += doff;
+        // }
+
         if (offsets.top + el.y + el.font > cvsH - offsets.bottom) {
           el.y -= offsets.top + el.y + el.font - (cvsH - offsets.bottom);
         }
@@ -271,6 +315,11 @@ myApp.controller('appController', ($scope) => {
 
           context.fillText(element, offsets.left + el.x, offsets.top + el.y + el.font - shift + k * el.font);
         };
+
+        if (dragging || $scope.selected) {
+          drawSelection(elems[dragElem.type][dragElem.id], offsets);
+          // drawMenu(elems[dragElem.type][dragElem.id]);
+        }
       };
     };
   };
@@ -345,25 +394,32 @@ myApp.controller('appController', ($scope) => {
   };
 
   $scope.loadData = () => {
-    // console.log($scope.address);
     fetch($scope.address)
       .then(res => res.json())
       .then(data => {
-        $scope.data = data;
+        $scope.$apply(() => {
+          $scope.data = data;
+        });
         $scope.changeCanvas($scope.curTemplate);
       });
   };
 
   $scope.changeDataset = (step) => {
-    // console.log($scope.data.length + " :L = C: " + $scope.datasetItem);
+    if (!$scope.data) {
+      return;
+    }
+    
     if ($scope.datasetItem + step >= 0 && $scope.datasetItem + step < $scope.data.length) {
       $scope.datasetItem += step;
       $scope.changeCanvas($scope.curTemplate);
-      // $scope.apply();
     }
   };
 
   $scope.createDocs = async (template) => {
+    if (!$scope.data) {
+      return;
+    }
+    
     let zip = new JSZip();
 
     for (let item = 0; item < $scope.data.length; item++) {
@@ -394,4 +450,9 @@ myApp.controller('appController', ($scope) => {
       $scope.changeCanvas(template);
     });
   };
+
+  $scope.changeAlign = (align) => {
+    $scope.curTemplate.selectedElem.align = align;
+    $scope.changeCanvas($scope.curTemplate);
+  }
 });
