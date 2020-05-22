@@ -17,13 +17,16 @@ const templates = [
           "value": "Министерство образования Нижегородской области",
           "x": 0,
           "y": 10,
+          "family": "Times New Roman",
           "font": 20,
           "align": "center"
         },
         {
           "value": "Государственное бюджетное профессиональное образовательное учреждение «Нижегородский радиотехнический колледж»",
-          "x": 10,
+          "x": 0,
           "y": 30,
+          "family": "Times New Roman",
+          "color": "black",
           "font": 20,
           "align": "center"
         },
@@ -31,6 +34,8 @@ const templates = [
           "value": "ОП.05 Основы программирования",
           "x": 150,
           "y": 250,
+          "family": "Times New Roman",
+          "color": "black",
           "font": 20,
           "align": "center"
         },
@@ -38,6 +43,8 @@ const templates = [
           "value": "ОТЧЁТ",
           "x": 320,
           "y": 400,
+          "family": "Times New Roman",
+          "color": "black",
           "font": 26,
           "align": "center"
         },
@@ -45,6 +52,8 @@ const templates = [
           "value": "по лабораторной работе № 1",
           "x": 130,
           "y": 430,
+          "family": "Times New Roman",
+          "color": "black",
           "font": 20,
           "align": "center"
         },
@@ -52,6 +61,8 @@ const templates = [
           "value": "Тема 'Двухмерные массивы'",
           "x": 130,
           "y": 450,
+          "family": "Times New Roman",
+          "color": "black",
           "font": 20,
           "align": "center"
         },
@@ -59,30 +70,41 @@ const templates = [
           "value": "Выполнил:",
           "x": 0,
           "y": 810,
+          "defaultX": 0,
+          "family": "Times New Roman",
+          "color": "black",
           "font": 20
         },
         {
           "value": "ученик группы",
           "x": 0,
           "y": 835,
+          "family": "Times New Roman",
+          "color": "black",
           "font": 20
         },
         {
           "value": "Проверил:",
           "x": 400,
           "y": 810,
+          "family": "Times New Roman",
+          "color": "black",
           "font": 20
         },
         {
           "value": "преподаватель",
           "x": 400,
           "y": 835,
+          "family": "Times New Roman",
+          "color": "black",
           "font": 20
         },
         {
           "value": "г.Нижний Новгород",
           "x": 320,
           "y": 920,
+          "family": "Times New Roman",
+          "color": "black",
           "font": 20,
           "align": "center"
         },
@@ -90,6 +112,8 @@ const templates = [
           "value": "2020г.",
           "x": 380,
           "y": 950,
+          "family": "Times New Roman",
+          "color": "black",
           "font": 20,
           "align": "center"
         }
@@ -99,6 +123,8 @@ const templates = [
           "value": "",
           "x": 0,
           "y": 860,
+          "family": "Times New Roman",
+          "color": "black",
           "font": 20
         },
         {
@@ -106,6 +132,8 @@ const templates = [
           "value": "",
           "x": 130,
           "y": 835,
+          "family": "Times New Roman",
+          "color": "black",
           "font": 20
         },
         {
@@ -113,6 +141,8 @@ const templates = [
           "value": "",
           "x": 400,
           "y": 860,
+          "family": "Times New Roman",
+          "color": "black",
           "font": 20
         }
       ]
@@ -136,6 +166,8 @@ const templates = [
           "value": "НАГРАЖДАЕТСЯ",
           "x": 0,
           "y": 250,
+          "family": "Times New Roman",
+          "color": "black",
           "font": 40,
           "align": "center"
         },
@@ -151,6 +183,8 @@ const templates = [
           ",
           "x": 230,
           "y": 350,
+          "family": "Times New Roman",
+          "color": "black",
           "font": 20,
           "align": "center"
         },
@@ -158,12 +192,16 @@ const templates = [
           "value": "Приказ №125 от",
           "x": 10,
           "y": 800,
+          "family": "Times New Roman",
+          "color": "black",
           "font": 20
         },
         {
           "value": "Руководитель",
           "x": 10,
           "y": 830,
+          "family": "Times New Roman",
+          "color": "black",
           "font": 20
         }
       ],
@@ -172,6 +210,8 @@ const templates = [
           "value": "",
           "x": 0,
           "y": 320,
+          "family": "Times New Roman",
+          "color": "black",
           "font": 20,
           "align": "center"
         },
@@ -180,6 +220,8 @@ const templates = [
           "value": "",
           "x": 160,
           "y": 800,
+          "family": "Times New Roman",
+          "color": "black",
           "font": 20
         },
         {
@@ -187,6 +229,8 @@ const templates = [
           "value": "",
           "x": 10,
           "y": 860,
+          "family": "Times New Roman",
+          "color": "black",
           "font": 20
         }
       ]
@@ -212,6 +256,8 @@ const templates = [
           "value": "",
           "x": 140,
           "y": 855,
+          "family": "Times New Roman",
+          "color": "black",
           "font": 20
         },
         {
@@ -219,6 +265,8 @@ const templates = [
           "value": "",
           "x": 160,
           "y": 833,
+          "family": "Times New Roman",
+          "color": "black",
           "font": 20
         },
         {
@@ -226,6 +274,8 @@ const templates = [
           "value": "",
           "x": 480,
           "y": 835,
+          "family": "Times New Roman",
+          "color": "black",
           "font": 20
         }
       ]

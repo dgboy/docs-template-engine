@@ -11,6 +11,21 @@ const loadImageAsync = async (src) => {
   });
 };
 
+const createPDF = async (canvas) => {
+  const quality = 1;
+  let w = сonvertPxToMM(canvas.width);
+  let h = сonvertPxToMM(canvas.height);
+  let orientation = w > h ? 'l' : 'p';
+  let docPDF = new jsPDF(orientation, 'mm', [w, h]);
+
+  return new Promise((resolve, reject) => {
+    setTimeout(() => {
+      docPDF.addImage(canvas.toDataURL('image/png', quality), 'JPEG', 0, 0);
+      resolve(docPDF);
+    }, 100);
+  });
+};
+
 const getLines = (text, maxLen) => {
   let words = text.split(" ");
   let lastWord = words[0];
@@ -43,18 +58,17 @@ const getLines = (text, maxLen) => {
 };
 
 const getWidthLongString = (ctx, strings) => {
-  let idLongStr = 0;
+  let longStrW = Number(ctx.measureText(strings[0]).width);
 
   for (let i = 1; i < strings.length; i++) {
-    const longTemp = ctx.measureText(strings[idLongStr]).width;
-    const element = ctx.measureText(strings[i]).width;
+    const strW = Number(ctx.measureText(strings[i]).width);
 
-    if(longTemp < element) {
-      idLongStr = i;
+    if(longStrW < strW) {
+      longStrW = strW;
     }
   }
 
-  return Number(ctx.measureText(strings[idLongStr]).width);
+  return longStrW;
 };
 
 const getNameResizingOffset = (mouse, offsets, cvsW, cvsH) => {
@@ -79,25 +93,26 @@ const getNameResizingOffset = (mouse, offsets, cvsW, cvsH) => {
   return null;
 };
 
-const getDraggingElement = (mouse, elems, offsets, elemsTypes, cvsW) => {
+const getSelectedElement = (mouse, t, elemsTypes) => {
+  const offsets = t.offsets;
+  const elems = t.elems;
+
   for (let i = 0; i < elemsTypes.length; i++) {
     const type = elemsTypes[i];
 
     for (let j = 0; j < elems[type].length; j++) {
       const el = elems[type][j];
 
-      let x = offsets.left + el.x;
-      let y = offsets.top + el.y;
+      const x = offsets.left + el.x;
+      const y = offsets.top + el.y;
 
-      const lines = getLines(el.value, cvsW - (offsets.left + offsets.right + el.x));
-      const widthLongString = getWidthLongString(context, lines);
+      const lines = getLines(el.value, t.width - (offsets.left + offsets.right));
+      // const widthLongString = getWidthLongString(context, lines);
 
-      const text = {
-        w: widthLongString,
-        h: el.font * lines.length
-      };
+      el.w = getWidthLongString(context, lines);
+      el.h = el.font * lines.length;
       
-      if (mouse.x >= x && mouse.x <= x + text.w && mouse.y >= y && mouse.y <= y + text.h) {
+      if (mouse.x >= x && mouse.x <= x + el.w && mouse.y >= y && mouse.y <= y + el.h) {
         return {
           type: type,
           id: j,
@@ -112,164 +127,3 @@ const getDraggingElement = (mouse, elems, offsets, elemsTypes, cvsW) => {
 
   return null;
 };
-
-const initButtons = (mouse, aligns, el) => {
-  let fields = ["left", "center", "right"];
-  
-  buttonsAling = ["left", "center", "right"];
-  const box = {
-    w: 20,
-    h: 20
-  }
-  const len = 3;
-  const icons = ["<", "=", ">"];
-  const offset = 5;
-
-  context.font = `${el.font}px Times New Roman`;
-  context.setLineDash([]);
-
-  for (let i = 0; i < buttonsAling.length; i++) {
-    // let 
-    let shift = i * box.w + offset;
-
-    context.fillStyle = el.align === buttonsAling[i] ? "white" : "gray";
-
-    context.fillRect(el.x + shift, el.y + el.font, box.w, box.h);
-    context.strokeRect(el.x + shift, el.y + el.font, box.w, box.h);
-    
-    context.fillStyle = "black";
-    context.fillText(icons[i], el.x + shift + 4, el.y + el.font * 2 - 4, box.w, box.h);
-  }
-
-
-  return null;
-};
-
-const getPressButton = (mouse, aligns, el) => {
-  let fields = ["left", "center", "right"];
-
-
-  // if (el.align && buttons.align[el.align]) {
-  //   return true;
-  // } else {
-  //   return null;
-  // }
-
-
-  for (let i = 0; i < fields.length; i++) {
-    const type = fields[i];
-      
-    if (mouse.x >= el.x && mouse.x <= x + text.w && mouse.y >= y && mouse.y <= y + text.h) {
-      return {
-        type: type,
-        id: j,
-        shift: {
-          x: mouse.x - x,
-          y: mouse.y - y
-        }
-      };
-    }
-
-    for (let j = 0; j < buttons[type].length; j++) {
-      const el = buttons[type][j];
-
-      let x = offsets.left + el.x;
-      let y = offsets.top + el.y;
-
-      const lines = getLines(el.value, cvsW - (offsets.left + offsets.right + el.x));
-      const widthLongString = getWidthLongString(context, lines);
-
-      const text = {
-        w: widthLongString,
-        h: el.font * lines.length
-      };
-    };
-  };
-
-  return null;
-};
-
-
-// if (dragok) {
-//   var mx = parseInt(e.clientX - offsetX);
-//   var my = parseInt(e.clientY - offsetY);
-
-//   var dx = mx - startX;
-//   var dy = my - startY;
-
-//   for (var i = 0; i < box.length; i++) {
-//     if (box[i].isDragging == true) {
-//       box[i].x += dx;
-//       box[i].y += dy;
-//     }
-//   }
-//   draw();
-//   startX = mx;
-//   startY = my;
-// }
-
-// dragging = false;
-
-// dragok = false;
-// for (var i = 0; i < box.length; i++) {
-//   box[i].isDragging = false;
-// }
-
-
-
-// var mx = parseInt(e.clientX - offsetX);
-// var my = parseInt(e.clientY - offsetY);
-
-// dragok = true;
-// var group = [];
-// for (var i = 0; i < box.length; i++) {
-
-//   if (mx > box[i].x && mx < box[i].x + box[i].width && my > box[i].y && my < box[i].y + box[i].height) {
-//     group.push(box[i]);
-//   }
-// }
-
-// if (group.length === 1) {
-//   group[0].isDragging = true;
-// } else if (group.length >= 2) {
-//   var maxZ = group[0].z;
-//   var b = group[0];
-
-//   for (var i = 1; i < group.length; i++) {
-//     if (maxZ < group[i].z) {
-//       maxZ = group[i].z;
-//       b = group[i];
-//     }
-//   }
-//   b.isDragging = true;
-// }
-
-// startX = mx;
-// startY = my;
-
-
-// canvas.addEventListener("mousedown", (e) => {
-//   mouse.x = e.pageX - canvas.offsetLeft;
-//   mouse.y = e.pageY - canvas.offsetTop;
-//   draw = true;
-//   context.beginPath();
-//   context.moveTo(mouse.x, mouse.y);
-// });
-
-// canvas.addEventListener("mousemove", (e) => {
-//   if (draw == true) {
-//     mouse.x = e.pageX - canvas.offsetLeft;
-//     mouse.y = e.pageY - canvas.offsetTop;
-//     context.lineTo(mouse.x, mouse.y);
-//     context.stroke();
-//   }
-// });
-
-// canvas.addEventListener("mouseup", (e) => {
-//   mouse.x = e.pageX - canvas.offsetLeft;
-//   mouse.y = e.pageY - canvas.offsetTop;
-//   context.lineTo(mouse.x, mouse.y);
-//   context.stroke();
-//   context.closePath();
-//   draw = false;
-// });
