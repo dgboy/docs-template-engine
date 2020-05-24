@@ -71,14 +71,14 @@ const getWidthLongString = (ctx, strings) => {
   return longStrW;
 };
 
-const getNameResizingOffset = (mouse, offsets, cvsW, cvsH) => {
+const getNameResizingOffset = (mouse, offsets, w, h) => {
   const shift = 5;
 
   if (mouse.x >= offsets.left - shift && mouse.x <= offsets.left + shift) {
     return "left";
   }
 
-  if (mouse.x >= cvsW - offsets.right - shift && mouse.x <= cvsW - offsets.right + shift) {
+  if (mouse.x >= w - offsets.right - shift && mouse.x <= w - offsets.right + shift) {
     return "right";
   }
 
@@ -86,7 +86,7 @@ const getNameResizingOffset = (mouse, offsets, cvsW, cvsH) => {
     return "top";
   }
 
-  if (mouse.y >= cvsH - offsets.bottom - shift && mouse.y <= cvsH - offsets.bottom + shift) {
+  if (mouse.y >= h - offsets.bottom - shift && mouse.y <= h - offsets.bottom + shift) {
     return "bottom";
   }
 

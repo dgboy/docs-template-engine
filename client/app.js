@@ -80,29 +80,45 @@ myApp.controller('appController', ($scope) => {
     context.stroke();
   };
 
-  const drawSelection = (el, offsets) => {
+  const drawSelection = (el, offsets, w) => {
     context.fillStyle = "rgba(100, 150, 185, 0.05)";
     context.font = `${el.font}px ${el.family}`;
     context.setLineDash([5, 5]);
 
-    let x = offsets.left + el.x;
-    let y = offsets.top + el.y;
 
-    const lines = getLines(el.value, cvsW - (offsets.left + offsets.right));
+    const lines = getLines(el.value, w - (offsets.left + offsets.right));
 
     const text = {
       w: getWidthLongString(context, lines),
       h: el.font * lines.length
     };
+    
 
-    // console.log("SELECTED");
-    console.log(el.w);
-    console.log(el.h);
+
+    switch (el.align) {
+      case "left":
+        el.x = 0;
+        break;
+      case "center":
+        el.x = parseInt(w - offsets.right - offsets.left - text.w) / 2;
+        break;
+      case "right":
+        el.x = w - offsets.right - text.w - offsets.left - 1;
+        break;
+      default:
+        // el.x = el.defaultX;
+        break;
+    };
+
+    const x = offsets.left + el.x;
+    const y = offsets.top + el.y;
+
+
     context.fillRect(x, y, text.w, text.h);
     context.strokeRect(x, y, text.w, text.h);
   };
 
-  const drawElements = (elems, offsets, item) => {
+  const drawElements = (elems, offsets, item, w) => {
     const elemsType = ["labels", "text"];
     const shift = 5;
 
@@ -127,13 +143,13 @@ myApp.controller('appController', ($scope) => {
           }
         }
 
-        let lines = getLines(el.value, cvsW - (offsets.left + offsets.right));
+        let lines = getLines(el.value, w - (offsets.left + offsets.right));
 
         el.w = getWidthLongString(context, lines);
         el.h = el.font * lines.length;
 
-        if (offsets.left + el.x + el.w > cvsW - offsets.right) {
-          el.x -= offsets.left + el.x + el.w - (cvsW - offsets.right);
+        if (offsets.left + el.x + el.w > w - offsets.right) {
+          el.x -= offsets.left + el.x + el.w - (w - offsets.right);
         }
 
         if (offsets.top + el.y + el.h > cvsH - offsets.bottom) {
@@ -150,10 +166,10 @@ myApp.controller('appController', ($scope) => {
               el.x = 0;
               break;
             case "center":
-              el.x = parseInt(cvsW - offsets.right - offsets.left - lineW) / 2;
+              el.x = parseInt(w - offsets.right - offsets.left - lineW) / 2;
               break;
             case "right":
-              el.x = cvsW - offsets.right - lineW - offsets.left - 1;
+              el.x = w - offsets.right - lineW - offsets.left - 1;
               break;
             default:
               // el.x = el.defaultX;
@@ -163,18 +179,9 @@ myApp.controller('appController', ($scope) => {
           context.fillText(line, offsets.left + el.x, offsets.top + el.y + el.font - shift + k * el.font);
         };
 
-        // if (dragging || $scope.selected) {
-        //   if (dragElem.type === elemsType[i] && dragElem.id === j) {
-        //     // console.log("Element");
-        //     // console.log(el);
-        //     drawSelection(el, offsets);
-        //   }
-        // }
-
-
         if (dragging || $scope.selected) {
           if (dragElem.type === elemsType[i] && dragElem.id === j) {
-            drawSelection(elems[dragElem.type][dragElem.id], offsets);
+            drawSelection(elems[dragElem.type][dragElem.id], offsets, w);
           }
         }
         
@@ -245,8 +252,8 @@ myApp.controller('appController', ($scope) => {
     mouse.y = event.pageY - canvas.offsetTop;
 
 
-    if(!resizing && !$scope.selected) {
-      const offsetDetected = getNameResizingOffset(mouse, t.offsets, cvsW, cvsH);
+    if(t && !resizing && !$scope.selected) {
+      const offsetDetected = getNameResizingOffset(mouse, t.offsets, t.width, t.height);
       const selectedElem = getSelectedElement(mouse, t, elemsTypes);
 
       if(offsetDetected) {
@@ -357,7 +364,7 @@ myApp.controller('appController', ($scope) => {
       context.drawImage(template.background.img, 0, 0, cvsW, cvsH);
     }
 
-    drawElements(template.elems, template.offsets, $scope.datasetItem);
+    drawElements(template.elems, template.offsets, $scope.datasetItem, template.width);
 
     if (editMode) {
       drawOffsets(template.offsets);
