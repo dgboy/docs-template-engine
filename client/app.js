@@ -198,13 +198,13 @@ myApp.controller('appController', ($scope) => {
 
     resizeOffset = getNameResizingOffset(mouse, t.offsets, cvsW, cvsH);
 
-    if (resizeOffset) {
+    if (resizeOffset && !$scope.selected) {
       canvas.style.cursor = (resizeOffset === "left" || resizeOffset === "right") ? 'col-resize' : 'row-resize';
       resizing = true;
       $scope.changeCanvas(t);
     }
     
-    
+
     const selectedElem = getSelectedElement(mouse, t, elemsTypes);
 
     if (selectedElem) {
@@ -229,7 +229,9 @@ myApp.controller('appController', ($scope) => {
         $scope.changeCanvas(t);
       } else {
         if (t.elems[selectedElem.type][selectedElem.id] == t.elems[dragElem.type][dragElem.id]) {
-          $scope.selected = false;
+          $scope.$apply(() => {
+            $scope.selected = false;
+          });
         }
       }
     } 
@@ -237,9 +239,27 @@ myApp.controller('appController', ($scope) => {
 
   const mouseMove = (event) => {
     const shift = 4;
+    const t = $scope.curTemplate;
 
-    if (resizing === true) {
-      const t = $scope.curTemplate;
+    mouse.x = event.pageX - canvas.offsetLeft;
+    mouse.y = event.pageY - canvas.offsetTop;
+
+
+    if(!resizing && !$scope.selected) {
+      const offsetDetected = getNameResizingOffset(mouse, t.offsets, cvsW, cvsH);
+      const selectedElem = getSelectedElement(mouse, t, elemsTypes);
+
+      if(offsetDetected) {
+        canvas.style.cursor = (offsetDetected == "left" || offsetDetected == "right") ? 'col-resize' : 'row-resize';
+      } else if(selectedElem) {
+        canvas.style.cursor = 'move';
+      } else {
+        canvas.style.cursor = 'default';
+      }
+    }
+
+
+    if (resizing) {
 
       mouse.x = event.pageX - canvas.offsetLeft;
       mouse.y = event.pageY - canvas.offsetTop;
@@ -270,12 +290,12 @@ myApp.controller('appController', ($scope) => {
       $scope.changeCanvas(t);
     }
 
-    if (dragging === true) {
-      const t = $scope.curTemplate;
+    if (dragging) {
+      // const t = $scope.curTemplate;
       const el = t.elems[dragElem.type][dragElem.id];
 
-      mouse.x = event.pageX - canvas.offsetLeft;
-      mouse.y = event.pageY - canvas.offsetTop;
+      // mouse.x = event.pageX - canvas.offsetLeft;
+      // mouse.y = event.pageY - canvas.offsetTop;
 
       const lines = getLines(el.value, cvsW - (t.offsets.left + t.offsets.right));
       const width = getWidthLongString(context, lines);
