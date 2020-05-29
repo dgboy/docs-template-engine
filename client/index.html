@@ -1,11 +1,11 @@
 <!DOCTYPE html>
-<html lang="ru" ng-app="myApp">
+<html lang="ru" ng-app="docsTemplateEngine">
 
 <head>
   <meta charset="UTF-8">
   <link rel="shortcut icon" href="favicon.ico" type="image/x-icon">
   <link rel="stylesheet" href="lib/bootstrap/bootstrap.min.css">
-  <link rel="stylesheet" href="lib/custom/style.css">
+  <link rel="stylesheet" href="css/style.css">
   <title>Шаблонизатор документов</title>
 </head>
 
@@ -18,7 +18,7 @@
 
     <div class="col-3 ml-3">
       <h1 class="header">Шаблоны</h1>
-      
+
       <ul class="list-group mt-1">
         <li class="list-group-item list-group-item-action" ng-repeat="t in templates"
           ng-class="{active : curTemplate.name === t.name}" ng-click="chooseTemplate(t)">
@@ -32,16 +32,13 @@
               <label class="custom-file-label" for="imageFile">Загрузить фон...</label>
             </div>
 
-            <button class="col mx-auto btn btn-warning my-1" data-toggle="modal" data-target="#modal">Загрузить
-              данные...</button>
-
             <button class="col btn btn-success my-1" ng-class="{disabled : !data}" ng-click="createDocs(t)">Создать
               экземпляры</button>
 
             <div class="row justify-content-between my-1" ng-show="data">
-              <button class="mx-1 btn btn-secondary" data-slide="prev" ng-click="changeDataset(-1)">
-                <</button> <span class="col pt-3 badge badge-dark">Текущий набор: {{datasetItem}}</span>
-                  <button class="mx-1 btn btn-secondary" data-slide="next" ng-click="changeDataset(1)">></button>
+              <button class="mx-1 btn btn-secondary" data-slide="prev" ng-click="changeDataset(-1)"><</button> 
+                <span class="col pt-3 badge badge-dark">Текущий набор: {{datasetItem}}</span>
+                <button class="mx-1 btn btn-secondary" data-slide="next" ng-click="changeDataset(1)">></button>
             </div>
 
             <div class="form-group" ng-show="selected">
@@ -53,32 +50,9 @@
                   <input type="radio" name="options" id="{{al.name}}" autocomplete="off"> {{al.label}}
                 </label>
               </div>
-              
-              <!-- <h6 class="text-center">Шрифт</h6>
-
-              <div class="col">
-                <div class="row">
-                  <label class="col-4" for="">Тип</label>
-                  <input class="col form-control" type="text" ng-model="{{font.family}}">
-                </div>
-
-                <div class="row">
-                  <label class="col-8" for="">Размер</label>
-                  <input class="col form-control" type="text" ng-model="{{font.size}}">
-                </div>
-                
-                <div class="row">
-                  <label class="col-8" for="">Цвет</label>
-                  <input type="color form-control" value="{{font.color}}">
-                </div>
-              </div> -->
-              
             </div>
-            </div>
+          </div>
 
-            <!-- <div class="form-group" ng-show="selected">
-
-          </div> -->
         </li>
       </ul>
     </div>
@@ -87,38 +61,6 @@
       <p>Ваш браузер не поддерживает элемент canvas!</p>
     </canvas>
 
-    <div class="modal fade" id="modal" tabindex="-1" role="dialog" aria-labelledby="modalLabel" aria-hidden="true">
-      <div class="modal-dialog" role="document">
-        <div class="modal-content">
-          <div class="modal-header">
-            <h5 class="modal-title" id="modalLabel">Загрузить данные</h5>
-            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-              <span aria-hidden="true">&times;</span>
-            </button>
-          </div>
-
-          <div class="modal-body">
-            <form>
-              <div class="form-group">
-                <label for="recipient-name" class="col-form-label">Введите API сайта с данными:</label>
-                <input type="text" ng-model="address" class="form-control" id="message-text"
-                  placeholder="API адрес данных">
-                <label class="col-form-label">Пример (титульники): https://template-docs.herokuapp.com/api/data</label>
-                <label class="col-form-label">Пример (грамота): https://template-docs.herokuapp.com/api/gramota</label>
-              </div>
-              <!-- <div class="form-group">
-                  <label for="message-text" class="col-form-label">Или загрузите JSON-файл:</label>
-                  <input type="file" class="form-control" id="message-text"></input>
-                </div> -->
-            </form>
-          </div>
-
-          <div class="modal-footer">
-            <button type="button" class="btn btn-secondary" data-dismiss="modal">Отмена</button>
-            <button type="button" class="btn btn-success" data-dismiss="modal" ng-click="loadData()">Загрузить</button>
-          </div>
-        </div>
-      </div>
     </div>
   </div>
 
@@ -137,9 +79,9 @@
   <script src="lib/jspdf.min.js"></script>
   <script src="lib/jszip.min.js"></script>
 
-  <script src="templates.js"></script>
-  <script src="helpers.js"></script>
+  <script src="js/helpers.js"></script>
   <script src="app.js"></script>
+  <script src="js/templateService.js"></script>
 </body>
 
 </html>

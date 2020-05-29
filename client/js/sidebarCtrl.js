@@ -1,18 +1,13 @@
-const docsTemplateEngine = angular.module('docsTemplateEngine', []);
-
-const canvas = document.getElementById("canvas");
-const context = canvas.getContext("2d");
-
-docsTemplateEngine.controller('appController', ($scope, templateService) => {
+docsTemplateEngine.controller('sidebarCtrl', ($scope, templatesService, dataService) => {
+  $scope.data = dataService.data[0].teacher;
   $scope.datasetItem = 0;
-  $scope.templates = templateService.templates;
+  $scope.templates = templatesService;
   $scope.curTemplate = null;
-  $scope.data = null;
+  $scope.temp = null;
 
   $scope.selected = false;
 
-  $scope.aligns = [
-    {
+  $scope.aligns = [{
       name: null,
       label: "х",
       icon: ">",
@@ -91,7 +86,7 @@ docsTemplateEngine.controller('appController', ($scope, templateService) => {
       w: getWidthLongString(context, lines),
       h: el.font * lines.length
     };
-    
+
 
 
     switch (el.align) {
@@ -126,7 +121,7 @@ docsTemplateEngine.controller('appController', ($scope, templateService) => {
         const el = elems[elemsType[i]][j];
 
         context.font = `${el.font}px ${el.family}`;
-        
+
         if ($scope.selected) {
           context.fillStyle = (el == elems[dragElem.type][dragElem.id]) ? `black` : "gray";
         } else {
@@ -174,7 +169,7 @@ docsTemplateEngine.controller('appController', ($scope, templateService) => {
               // el.x = el.defaultX;
               break;
           };
-          
+
           context.fillText(line, offsets.left + el.x, offsets.top + el.y + el.font - shift + k * el.font);
         };
 
@@ -183,7 +178,7 @@ docsTemplateEngine.controller('appController', ($scope, templateService) => {
             drawSelection(elems[dragElem.type][dragElem.id], offsets, w);
           }
         }
-        
+
       };
     };
   };
@@ -209,7 +204,7 @@ docsTemplateEngine.controller('appController', ($scope, templateService) => {
       resizing = true;
       $scope.changeCanvas(t);
     }
-    
+
 
     const selectedElem = getSelectedElement(mouse, t, elemsTypes);
 
@@ -240,7 +235,7 @@ docsTemplateEngine.controller('appController', ($scope, templateService) => {
           });
         }
       }
-    } 
+    }
   };
 
   const mouseMove = (event) => {
@@ -251,13 +246,13 @@ docsTemplateEngine.controller('appController', ($scope, templateService) => {
     mouse.y = event.pageY - canvas.offsetTop;
 
 
-    if(t && !resizing && !$scope.selected) {
+    if (t && !resizing && !$scope.selected) {
       const offsetDetected = getNameResizingOffset(mouse, t.offsets, t.width, t.height);
       const selectedElem = getSelectedElement(mouse, t, elemsTypes);
 
-      if(offsetDetected) {
+      if (offsetDetected) {
         canvas.style.cursor = (offsetDetected == "left" || offsetDetected == "right") ? 'col-resize' : 'row-resize';
-      } else if(selectedElem) {
+      } else if (selectedElem) {
         canvas.style.cursor = 'move';
       } else {
         canvas.style.cursor = 'default';
@@ -343,6 +338,9 @@ docsTemplateEngine.controller('appController', ($scope, templateService) => {
     if ($scope.curTemplate !== template) {
       $scope.data = null;
       $scope.curTemplate = template;
+      $scope.temp = JSON.stringify(template);
+      // $scope.data = JSON.stringify(data)
+      // console.log(JSON.stringify(template));
 
       if (template.background.path) {
         loadImageAsync(imagePath + template.background.path)
