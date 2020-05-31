@@ -3,28 +3,9 @@ body {
   background: black;
 }
 
-.header {
-  background: #222;
-  color: red;
-
-  text-align: center;
-  padding: 1px;
-
-  font-family: Arial, Helvetica, sans-serif;
-}
-
 #canvas {
   background: white;
   margin: 0 auto;
-}
-
-.left-panel {
-  background: gray;
-  display: inline-block;
-
-  width: 262px;
-  height: 496px;
-  margin-top: 5px;
 }
 
 li {

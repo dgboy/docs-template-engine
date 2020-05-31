@@ -3,9 +3,7 @@ docsTemplateEngine.factory('templateService', () => {
     templates: [
       {
         "name": "Титульный лист отчёта",
-        "background": {
-          "path": null
-        },
+        "background": null,
         "width": 793,
         "height": 1122,
         "offsets": {
@@ -120,7 +118,7 @@ docsTemplateEngine.factory('templateService', () => {
               "align": "center"
             }
           ],
-          "text": [{
+          "dataFields": [{
               "name": "student",
               "value": "",
               "x": 0,
@@ -148,37 +146,18 @@ docsTemplateEngine.factory('templateService', () => {
               "font": 20
             }
           ]
-        },
-        "data": [
-          {
-            "student": "Горбунов Даниил Павлович",
-            "group": "3ПКС-17-2с",
-            "teacher": "Слугин Владимир Георгиевич",
-          },
-          {
-            "student": "Левин Иван Петрович",
-            "group": "3ПКС-17-2с",
-            "teacher": "Слугин Владимир Георгиевич",
-          },
-          {
-            "student": "Лесков Иван Иванович",
-            "group": "3РА-17-2с",
-            "teacher": "Слугин Владимир Георгиевич",
-          }
-        ]
+        }
       },
       {
         "name": "Грамота",
-        "background": {
-          "path": "charter.jpg"
-        },
+        "background": "charter.jpg",
         "width": 793,
         "height": 1122,
         "offsets": {
-          "left": 113,
-          "right": 113,
-          "top": 75,
-          "bottom": 75
+          "left": 115,
+          "right": 115,
+          "top": 100,
+          "bottom": 100
         },
         "elems": {
           "labels": [{
@@ -224,7 +203,7 @@ docsTemplateEngine.factory('templateService', () => {
               "font": 20
             }
           ],
-          "text": [{
+          "dataFields": [{
               "name": "member",
               "value": "",
               "x": 0,
@@ -257,9 +236,7 @@ docsTemplateEngine.factory('templateService', () => {
       },
       {
         "name": "Титульный лист диплома",
-        "background": {
-          "path": "diplom-title.jpg"
-        },
+        "background": "diplom-title.jpg",
         "width": 793,
         "height": 1122,
         "offsets": {
@@ -269,7 +246,7 @@ docsTemplateEngine.factory('templateService', () => {
           "bottom": 75
         },
         "elems": {
-          "text": [{
+          "dataFields": [{
               "name": "student",
               "value": "",
               "x": 140,

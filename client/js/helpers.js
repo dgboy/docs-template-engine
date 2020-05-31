@@ -26,8 +26,8 @@ const createPDF = async (canvas) => {
   });
 };
 
-const getLines = (text, maxLen) => {
-  let words = text.split(" ");
+const getLines = (dataFields, maxLen, ctx) => {
+  let words = dataFields.split(" ");
   let lastWord = words[0];
   let splitChar = " ";
   let lines = [];
@@ -39,7 +39,7 @@ const getLines = (text, maxLen) => {
   for (let i = 1; i < words.length; i++) {
     let w = words[i];
 
-    let width = context.measureText(lastWord + splitChar + w).width;
+    let width = ctx.measureText(lastWord + splitChar + w).width;
 
     if (width < maxLen) {
       lastWord += (splitChar + w);
@@ -93,7 +93,7 @@ const getNameResizingOffset = (mouse, offsets, w, h) => {
   return null;
 };
 
-const getSelectedElement = (mouse, t, elemsTypes) => {
+const getSelectedElement = (mouse, t, elemsTypes, ctx) => {
   const offsets = t.offsets;
   const elems = t.elems;
 
@@ -106,10 +106,10 @@ const getSelectedElement = (mouse, t, elemsTypes) => {
       const x = offsets.left + el.x;
       const y = offsets.top + el.y;
 
-      const lines = getLines(el.value, t.width - (offsets.left + offsets.right));
+      const lines = getLines(el.value, t.width - (offsets.left + offsets.right), ctx);
       // const widthLongString = getWidthLongString(context, lines);
 
-      el.w = getWidthLongString(context, lines);
+      el.w = getWidthLongString(ctx, lines);
       el.h = el.font * lines.length;
       
       if (mouse.x >= x && mouse.x <= x + el.w && mouse.y >= y && mouse.y <= y + el.h) {
@@ -126,4 +126,22 @@ const getSelectedElement = (mouse, t, elemsTypes) => {
   };
 
   return null;
+};
+
+const initData = (dataFields) => {
+  const data = [];
+  const dataset = {};
+  
+  for (let i = 0; i < dataFields.length; i++) {
+    dataset[dataFields[i].name] = dataFields[i].name;
+  }
+
+  data.push(dataset);
+  return data;
+};
+
+const fillTemplateDataFields = (dataFields, data) => {
+  for (let i = 0; i < dataFields.length; i++) {
+    dataFields[i].value = data[dataFields[i].name];
+  }
 };

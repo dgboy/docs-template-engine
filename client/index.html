@@ -14,58 +14,10 @@
     <span class="nav-title mx-auto navbar-brand font-weight-bold">Шаблонизатор документов</span>
   </nav>
 
-  <div class="row justify-content-between">
-
-    <div class="col-3 ml-3">
-      <h1 class="header">Шаблоны</h1>
-
-      <ul class="list-group mt-1">
-        <li class="list-group-item list-group-item-action" ng-repeat="t in templates"
-          ng-class="{active : curTemplate.name === t.name}" ng-click="chooseTemplate(t)">
-
-          <div>{{t.name}}</div>
-
-          <div class="p-1" ng-if="curTemplate.name === t.name">
-            <hr>
-            <div class="mx-auto my-1 custom-file">
-              <input type="file" class="custom-file-input" id="imageFile" ng-click="loadBackground(t)">
-              <label class="custom-file-label" for="imageFile">Загрузить фон...</label>
-            </div>
-
-            <button class="col btn btn-success my-1" ng-class="{disabled : !data}" ng-click="createDocs(t)">Создать
-              экземпляры</button>
-
-            <div class="row justify-content-between my-1" ng-show="data">
-              <button class="mx-1 btn btn-secondary" data-slide="prev" ng-click="changeDataset(-1)"><</button> 
-                <span class="col pt-3 badge badge-dark">Текущий набор: {{datasetItem}}</span>
-                <button class="mx-1 btn btn-secondary" data-slide="next" ng-click="changeDataset(1)">></button>
-            </div>
-
-            <div class="form-group" ng-show="selected">
-              <h6 class="text-center">Размещение</h6>
-
-              <div class="col btn-group btn-group-toggle" data-toggle="buttons">
-                <label class="btn btn-secondary" ng-repeat="al in aligns" ng-class="{active : al.active}"
-                  ng-click="changeAlign(al.name)">
-                  <input type="radio" name="options" id="{{al.name}}" autocomplete="off"> {{al.label}}
-                </label>
-              </div>
-            </div>
-          </div>
-
-        </li>
-      </ul>
-    </div>
-
-    <canvas class="" id="canvas" width="793px" height="1122px">
-      <p>Ваш браузер не поддерживает элемент canvas!</p>
-    </canvas>
-
-    </div>
-  </div>
+  <div docs-template-engine="templates"></div>
 
   <footer class="card-footer text-muted bg-dark my-2 row">
-    <div class="text-center">&copy; 2020, Daniil Gorbunov</div>
+    <div class="mx-auto bg-dark">&copy; 2020, Daniil Gorbunov</div>
   </footer>
 
   <script src="lib/bootstrap/jquery-3.4.1.slim.min.js"></script>
@@ -81,6 +33,7 @@
 
   <script src="js/helpers.js"></script>
   <script src="app.js"></script>
+  <script src="js/directiveEngine.js"></script>
   <script src="js/templateService.js"></script>
 </body>
 
