@@ -1,7 +1,9 @@
 const docsTemplateEngine = angular.module('docsTemplateEngine', []);
 
 docsTemplateEngine.controller('appController', ($scope, templateService) => {
+  // Присваивание наборов шаблонов из соответствующего сервиса
   $scope.templates = templateService.templates;
+  // Набор переменных, хранящих временные значения
   $scope.cur = {
     templateName: null,
     template: null,
@@ -9,12 +11,14 @@ docsTemplateEngine.controller('appController', ($scope, templateService) => {
     data: null,
     dataset: 0
   };
-
+  
+  // Определяет выбран ли объект или нет
   $scope.selected = false;
 
   const canvas = document.getElementById("canvas");
   const context = canvas.getContext("2d");
 
+  // Путь к фоновым изображениям для шаблонов по умолчанию
   const imagePath = "images/";
 
   const mouse = {
@@ -23,6 +27,12 @@ docsTemplateEngine.controller('appController', ($scope, templateService) => {
   };
 
   const elemsTypes = ["labels", "dataFields"];
+
+  let resizing = false;
+  let resizeOffset = null;
+
+  let dragging = false;
+  let dragElem = null;
 
 
   // отображает пунктиром отступы, если editMode == true
@@ -58,8 +68,6 @@ docsTemplateEngine.controller('appController', ($scope, templateService) => {
       w: getWidthLongString(context, lines),
       h: el.font * lines.length
     };
-    
-
 
     switch (el.align) {
       case "left":
@@ -149,13 +157,6 @@ docsTemplateEngine.controller('appController', ($scope, templateService) => {
       };
     };
   };
-
-
-  let resizing = false;
-  let resizeOffset = null;
-
-  let dragging = false;
-  let dragElem = null;
 
 
   const mouseDown = (event) => {

@@ -9,12 +9,12 @@
   <title>Шаблонизатор документов</title>
 </head>
 
-<body ng-controller="appController">
+<body>
   <nav class="navbar navbar-dark bg-dark mb-2 row">
     <span class="nav-title mx-auto navbar-brand font-weight-bold">Шаблонизатор документов</span>
   </nav>
 
-  <div docs-template-engine="templates"></div>
+  <div docs-template-engine></div>
 
   <footer class="card-footer text-muted bg-dark my-2 row">
     <div class="mx-auto bg-dark">&copy; 2020, Daniil Gorbunov</div>
@@ -32,7 +32,7 @@
   <script src="lib/jszip.min.js"></script>
 
   <script src="js/helpers.js"></script>
-  <script src="app.js"></script>
+  <script src="js/app.js"></script>
   <script src="js/directiveEngine.js"></script>
   <script src="js/templateService.js"></script>
 </body>

@@ -38,7 +38,6 @@ const getLines = (dataFields, maxLen, ctx) => {
   
   for (let i = 1; i < words.length; i++) {
     let w = words[i];
-
     let width = ctx.measureText(lastWord + splitChar + w).width;
 
     if (width < maxLen) {
@@ -102,12 +101,10 @@ const getSelectedElement = (mouse, t, elemsTypes, ctx) => {
 
     for (let j = 0; j < elems[type].length; j++) {
       const el = elems[type][j];
-
       const x = offsets.left + el.x;
       const y = offsets.top + el.y;
 
       const lines = getLines(el.value, t.width - (offsets.left + offsets.right), ctx);
-      // const widthLongString = getWidthLongString(context, lines);
 
       el.w = getWidthLongString(ctx, lines);
       el.h = el.font * lines.length;
