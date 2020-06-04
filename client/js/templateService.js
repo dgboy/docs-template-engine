@@ -170,21 +170,12 @@ docsTemplateEngine.factory('templateService', () => {
               "align": "center"
             },
             {
-              "value": "За ловкость, силу и сноровку,\
-              Упорный труд на тренировках,\
-              За собранность, стальные нервы,\
-              И за стремление быть первым,\
-              За мужество и за терпенье,\
-              Талант, напор и вдохновение\
-              И за прекрасный результат,\
-              Который лучше всех наград!\
-            ",
-              "x": 230,
+              "value": "за стремление учиться лучше, за пытливый ум и доброту, за то, что в борьбе с самим собой научился находить правильное решение и управлять своим поведением. за стремление учиться лучше и умение преодолевать трудности, за умный взгляд пытливых глаз, за смелость при принятии решений, за то, что станет пятый класс ступенькой к новым достижениям.",
+              "x": 0,
               "y": 350,
               "family": "Times New Roman",
               "color": "black",
-              "font": 20,
-              "align": "center"
+              "font": 20
             },
             {
               "value": "Приказ №125 от",
@@ -246,34 +237,43 @@ docsTemplateEngine.factory('templateService', () => {
           "bottom": 75
         },
         "elems": {
-          "dataFields": [{
-              "name": "student",
-              "value": "",
-              "x": 140,
-              "y": 855,
-              "family": "Times New Roman",
-              "color": "black",
-              "font": 20
+          "labels": [
+          ],
+          "dataFields": [
+            {
+                "name": "student",
+                "value": "student",
+                "x": 59,
+                "y": 765,
+                "family": "Times New Roman",
+                "color": "black",
+                "font": 20,
+                "w": 57.7734375,
+                "h": 20
             },
             {
-              "name": "group",
-              "value": "",
-              "x": 160,
-              "y": 833,
-              "family": "Times New Roman",
-              "color": "black",
-              "font": 20
+                "name": "group",
+                "value": "group",
+                "x": 79,
+                "y": 742,
+                "family": "Times New Roman",
+                "color": "black",
+                "font": 20,
+                "w": 46.66015625,
+                "h": 20
             },
             {
-              "name": "teacher",
-              "value": "",
-              "x": 480,
-              "y": 835,
-              "family": "Times New Roman",
-              "color": "black",
-              "font": 20
+                "name": "teacher",
+                "value": "teacher",
+                "x": 399,
+                "y": 743,
+                "family": "Times New Roman",
+                "color": "black",
+                "font": 20,
+                "w": 57.724609375,
+                "h": 20
             }
-          ]
+        ]
         }
       }
     ]
