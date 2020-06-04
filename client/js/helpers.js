@@ -92,7 +92,7 @@ const getNameResizingOffset = (mouse, offsets, w, h) => {
   return null;
 };
 
-const getSelectedElement = (mouse, t, elemsTypes, ctx) => {
+const getSelectedElement = (mouse, t, elemsTypes, ctx, downfalse) => {
   const offsets = t.offsets;
   const elems = t.elems;
 
@@ -101,6 +101,7 @@ const getSelectedElement = (mouse, t, elemsTypes, ctx) => {
 
     for (let j = 0; j < elems[type].length; j++) {
       const el = elems[type][j];
+
       const x = offsets.left + el.x;
       const y = offsets.top + el.y;
 
@@ -141,4 +142,6 @@ const fillTemplateDataFields = (dataFields, data) => {
   for (let i = 0; i < dataFields.length; i++) {
     dataFields[i].value = data[dataFields[i].name];
   }
+
+  return dataFields;
 };

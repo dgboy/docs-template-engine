@@ -172,7 +172,9 @@ docsTemplateEngine.controller('appController', ($scope, templateService) => {
       $scope.changeCanvas(t);
     }
 
-    const selectedElem = getSelectedElement(mouse, t, elemsTypes, context);
+    const selectedElem = getSelectedElement(mouse, t, elemsTypes, context, true);
+    console.log(selectedElem);
+
 
     if (selectedElem) {
       if (!$scope.selected) {
@@ -279,10 +281,13 @@ docsTemplateEngine.controller('appController', ($scope, templateService) => {
   canvas.onmouseup = mouseUp;
   canvas.onmousemove = mouseMove;
 
-  $scope.updateData = (jsonStr) => {
-    $scope.cur.data = jsonStr;
-    const template = JSON.parse($scope.cur.template);
-    $scope.changeCanvas(template);
+  $scope.updateData = (jsonData) => {
+    if (jsonData && JSON.parse(jsonData)) {
+      $scope.cur.data = jsonData;
+      console.log(jsonData);
+      const template = JSON.parse($scope.cur.template);
+      $scope.changeCanvas(template);
+    }
   };
 
   $scope.updateTemplate = (jsonStr) => {
@@ -294,7 +299,6 @@ docsTemplateEngine.controller('appController', ($scope, templateService) => {
 
   $scope.chooseTemplate = (template) => {
     $scope.cur.templateName = template.name;
-    
     const temp = JSON.parse($scope.cur.template);
     
     if (temp && temp.name === template.name) {
@@ -302,9 +306,10 @@ docsTemplateEngine.controller('appController', ($scope, templateService) => {
     }
     
       $scope.cur.template = JSON.stringify(template, null, 4);
-
       const data = initData(template.elems.dataFields);
       $scope.cur.data = JSON.stringify(data, null, 4);
+
+      template.elems.dataFields = fillTemplateDataFields(template.elems.dataFields, data[$scope.cur.dataset]);
       
       if (template.background) {
         loadImageAsync(imagePath + template.background)
@@ -320,15 +325,15 @@ docsTemplateEngine.controller('appController', ($scope, templateService) => {
 
   $scope.changeCanvas = (template, editMode = true) => {
     $scope.cur.template = JSON.stringify(template, null, 4);
-    const data = JSON.parse($scope.cur.data);
-
     context.clearRect(0, 0, canvas.width, canvas.height);
+
+    const data = JSON.parse($scope.cur.data);
+    template.elems.dataFields = fillTemplateDataFields(template.elems.dataFields, data[$scope.cur.dataset]);
 
     if ($scope.cur.img) {
       context.drawImage($scope.cur.img, 0, 0, canvas.width, canvas.height);
     }
 
-    fillTemplateDataFields(template.elems.dataFields, data[$scope.cur.dataset]);
     drawElements(template.elems, template.offsets, $scope.cur.dataset, template.width);
 
     if (editMode) {
