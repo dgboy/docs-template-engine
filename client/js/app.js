@@ -173,7 +173,7 @@ docsTemplateEngine.controller('appController', ($scope, templateService) => {
     }
 
     const selectedElem = getSelectedElement(mouse, t, elemsTypes, context, true);
-    console.log(selectedElem);
+    console.log(mouse);
 
 
     if (selectedElem) {
@@ -185,6 +185,7 @@ docsTemplateEngine.controller('appController', ($scope, templateService) => {
         $scope.$apply(() => {
           $scope.selected = -$scope.selected;
           t.selectedElem = t.elems[dragElem.type][dragElem.id];
+          console.log(t.selectedElem);
         });
 
         $scope.changeCanvas(t);
@@ -399,9 +400,15 @@ docsTemplateEngine.controller('appController', ($scope, templateService) => {
     };
 
     zip.generateAsync({
-      type: 'blob'
+      type: 'blob',
+      mimeType: "application/ods",
+      compression: "DEFLATE"
     }).then(content => {
-      saveAs(content, 'docs.zip');
+      try {
+        saveAs(content, 'docs.zip');
+      } catch (e) {
+        console.log(e);
+      }
       $scope.changeCanvas(template);
     });
   };
