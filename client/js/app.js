@@ -173,17 +173,13 @@ docsTemplateEngine.controller('appController', ($scope, templateService) => {
     mouse.y = event.pageY - canvas.offsetTop;
 
     resizeOffset = getNameResizingOffset(mouse, t.offsets, t.width, t.height);
-
     if (resizeOffset && !$scope.selected) {
       canvas.style.cursor = (resizeOffset === "left" || resizeOffset === "right") ? 'col-resize' : 'row-resize';
       resizing = true;
       $scope.changeCanvas(t);
     }
 
-    const selectedElem = getSelectedElement(mouse, t, elemsTypes, context, true);
-    console.log(mouse);
-
-
+    const selectedElem = getSelectedElement(mouse, t, elemsTypes, context);
     if (selectedElem) {
       if (!$scope.selected) {
         canvas.style.cursor = 'move';
@@ -255,15 +251,13 @@ docsTemplateEngine.controller('appController', ($scope, templateService) => {
       const el = t.elems[dragElem.type][dragElem.id];
 
       const lines = getLines(el.value, t.width - (t.offsets.left + t.offsets.right), context);
-      const width = getWidthLongString(context, lines);
-
+      const lineW = getWidthLongString(context, lines);
       const startElemX = mouse.x - dragElem.shift.x;
       const startElemY = mouse.y - dragElem.shift.y;
 
-      if (!el.align && startElemX >= t.offsets.left && startElemX + width < t.width - t.offsets.right + shift) {
+      if (!el.align && startElemX >= t.offsets.left && startElemX + lineW < t.width - t.offsets.right + shift) {
         el.x = mouse.x - t.offsets.left - dragElem.shift.x;
       }
-
       if (startElemY >= t.offsets.top && startElemY + el.font < t.height - t.offsets.top) {
         el.y = mouse.y - t.offsets.top - dragElem.shift.y;
       }
@@ -278,7 +272,6 @@ docsTemplateEngine.controller('appController', ($scope, templateService) => {
     canvas.style.cursor = "default";
     resizing = false;
     resizeOffset = null;
-
     dragging = false;
     if (!$scope.selected) {
       dragElem = null;
@@ -293,7 +286,6 @@ docsTemplateEngine.controller('appController', ($scope, templateService) => {
 
   $scope.updateData = (jsonData) => {
     let data;
-    
     try {
       data = JSON.parse(jsonData);
     } catch (e) {

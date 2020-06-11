@@ -92,7 +92,7 @@ const getNameResizingOffset = (mouse, offsets, w, h) => {
   return null;
 };
 
-const getSelectedElement = (mouse, t, elemsTypes, ctx, downfalse) => {
+const getSelectedElement = (mouse, t, elemsTypes, ctx) => {
   const offsets = t.offsets;
   const elems = t.elems;
 
@@ -101,14 +101,28 @@ const getSelectedElement = (mouse, t, elemsTypes, ctx, downfalse) => {
 
     for (let j = 0; j < elems[type].length; j++) {
       const el = elems[type][j];
+      const freeSpace = t.width - (offsets.left + offsets.right);
+
+      const lines = getLines(el.value, freeSpace, ctx);
+      el.w = getWidthLongString(ctx, lines);
+      el.h = el.font * lines.length;
+
+      switch (el.align) {
+        case "left":
+          el.x = 0;
+          break;
+        case "center":
+          el.x = parseInt(freeSpace - el.w) / 2;
+          break;
+        case "right":
+          el.x = freeSpace - el.w - 1;
+          break;
+        default:
+          break;
+      };
 
       const x = offsets.left + el.x;
       const y = offsets.top + el.y;
-
-      const lines = getLines(el.value, t.width - (offsets.left + offsets.right), ctx);
-
-      el.w = getWidthLongString(ctx, lines);
-      el.h = el.font * lines.length;
       
       if (mouse.x >= x && mouse.x <= x + el.w && mouse.y >= y && mouse.y <= y + el.h) {
         return {
