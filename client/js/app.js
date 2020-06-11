@@ -189,9 +189,7 @@ docsTemplateEngine.controller('appController', ($scope, templateService) => {
         $scope.$apply(() => {
           $scope.selected = -$scope.selected;
           t.selectedElem = t.elems[dragElem.type][dragElem.id];
-          console.log(t.selectedElem);
         });
-
         $scope.changeCanvas(t);
       }
     }
@@ -200,10 +198,8 @@ docsTemplateEngine.controller('appController', ($scope, templateService) => {
   const mouseMove = (event) => {
     // Небольшой сдвиг для определения элементов по ширине
     const shift = 4;
-
     mouse.x = event.pageX - canvas.offsetLeft;
     mouse.y = event.pageY - canvas.offsetTop;
-
 
     if ($scope.cur.template && !resizing && !$scope.selected) {
       const t = JSON.parse($scope.cur.template);
@@ -219,7 +215,6 @@ docsTemplateEngine.controller('appController', ($scope, templateService) => {
         canvas.style.cursor = 'default';
       }
     }
-
 
     if (resizing) {
       const t = JSON.parse($scope.cur.template);
@@ -298,9 +293,10 @@ docsTemplateEngine.controller('appController', ($scope, templateService) => {
       $scope.vm.data.valid = true;
       $scope.vm.data.message = null;
       $scope.cur.data = jsonData;
-
-      const template = JSON.parse($scope.cur.template);
-      $scope.changeCanvas(template);
+      
+      const t = JSON.parse($scope.cur.template);
+      t.elems.dataFields = fillTemplateDataFields(t.elems.dataFields, data[$scope.cur.dataset]);
+      $scope.changeCanvas(t);
     }
   };
 
@@ -358,7 +354,7 @@ docsTemplateEngine.controller('appController', ($scope, templateService) => {
     
     const data = JSON.parse($scope.cur.data);
     template.elems.dataFields = fillTemplateDataFields(template.elems.dataFields, data[$scope.cur.dataset]);
-    
+
     context.clearRect(0, 0, template.width, template.height);
     if (template.background && $scope.cur.img) {
       context.drawImage($scope.cur.img, 0, 0, template.width, template.height);
@@ -380,6 +376,7 @@ docsTemplateEngine.controller('appController', ($scope, templateService) => {
 
     if ($scope.cur.dataset + step >= 0 && $scope.cur.dataset + step < data.length) {
       $scope.cur.dataset += step;
+      t.elems.dataFields = fillTemplateDataFields(t.elems.dataFields, data[$scope.cur.dataset]);
       $scope.changeCanvas(t);
     }
   };
@@ -388,20 +385,16 @@ docsTemplateEngine.controller('appController', ($scope, templateService) => {
   $scope.loadBackground = (template) => {
     const handleImage = (e) => {
       let reader = new FileReader();
-
       reader.onload = (event) => {
         let img = new Image();
-
         img.onload = () => {
           canvas.width = template.width = img.width;
           canvas.height = template.height = img.height;
           $scope.cur.img = img;
           $scope.changeCanvas(template);
         };
-
         img.src = event.target.result;
       };
-
       template.background = e.target.files[0].name;
       reader.readAsDataURL(e.target.files[0]);
     }
@@ -410,12 +403,12 @@ docsTemplateEngine.controller('appController', ($scope, templateService) => {
     imageLoader.addEventListener('change', handleImage, false);
   };
 
-  $scope.createDocs = async (template) => {
+  $scope.createDocs = async () => {
     const data = JSON.parse($scope.cur.data);
+    const template = JSON.parse($scope.cur.template);
     if (!data) {
       return;
     }
-
     let zip = new JSZip();
 
     for (let item = 0; item < data.length; item++) {
