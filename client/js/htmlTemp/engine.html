@@ -13,16 +13,19 @@
             <input type='file' class='custom-file-input' id='imageFile' ng-click='loadBackground(t)'>
             <label class='custom-file-label' for='imageFile'>Загрузить фон...</label>
           </div>
-          <button class='col btn btn-success my-1' ng-click='createDocs(t)'>Создать экземпляры</button>
           <hr>
 
           <div class="flex-column">
-            <label class='row col-form-label' for='d'>
-              <span class="mx-auto">Наборы данных</span>
-            </label>
+            <label class='row col-form-label' for='d'><span class="mx-auto">Наборы данных</span></label>
             <textarea class='form-control' rows='5' name="d" ng-model='cur.data'></textarea>
-            <button class='my-1 btn btn-warning' ng-click='updateData(cur.data)'>Применить</button>
-          
+
+            <div class="alert alert-danger mt-1" role="alert" ng-show="!vm.data.valid">
+              {{vm.data.message}}
+            </div>
+
+            <button class='mt-1 btn btn-warning' ng-click='updateData(cur.data)'>Применить</button>
+            <button class='mt-1 btn btn-success' ng-click='createDocs(t)'>Создать экземпляры</button>
+            
             <div class='row justify-content-between my-1'>
               <button class='mx-1 btn btn-secondary' ng-click='changeDataset(-1)'><</button>
               <span class='col pt-3 badge badge-dark'>Текущий набор: {{cur.dataset}}</span>
@@ -32,11 +35,15 @@
           <hr>
 
           <div class="flex-column">
-            <label class='row col-form-label' for='t'>
-              <span class="mx-auto">Настройки шаблона</span>
-            </label>
+            <label class='row col-form-label' for='t'><span class="mx-auto">Настройки шаблона</span></label>
             <textarea class='form-control' rows='15' name="t" ng-model='cur.template'></textarea>
+
+            <div class="alert alert-danger mt-1" role="alert" ng-show="!vm.template.valid">
+              {{vm.template.message}}
+            </div>
+
             <button class='my-1 btn btn-warning' ng-click='updateTemplate(cur.template)'>Применить</button>
+            <button class='btn btn-success my-1' ng-click='createDocs(t)'>Создать экземпляры</button>
           </div>
           
         </div>

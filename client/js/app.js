@@ -11,7 +11,18 @@ docsTemplateEngine.controller('appController', ($scope, templateService) => {
     data: null,
     dataset: 0
   };
-  
+
+  $scope.vm = {
+    data: {
+      valid: true,
+      message: ""
+    },
+    template: {
+      valid: true,
+      message: ""
+    }
+  }
+
   // Определяет выбран ли объект или нет
   $scope.selected = false;
 
@@ -102,7 +113,7 @@ docsTemplateEngine.controller('appController', ($scope, templateService) => {
         const el = elems[elemsType[i]][j];
 
         context.font = `${el.font}px ${el.family}`;
-        
+
         if ($scope.selected) {
           context.fillStyle = (el == elems[dragElem.type][dragElem.id]) ? `black` : "gray";
         } else {
@@ -190,7 +201,7 @@ docsTemplateEngine.controller('appController', ($scope, templateService) => {
 
         $scope.changeCanvas(t);
       }
-    } 
+    }
   };
 
   const mouseMove = (event) => {
@@ -200,15 +211,15 @@ docsTemplateEngine.controller('appController', ($scope, templateService) => {
     mouse.y = event.pageY - canvas.offsetTop;
 
 
-    if($scope.cur.template && !resizing && !$scope.selected) {
+    if ($scope.cur.template && !resizing && !$scope.selected) {
       const t = JSON.parse($scope.cur.template);
 
       const offsetDetected = getNameResizingOffset(mouse, t.offsets, t.width, t.height);
       const selectedElem = getSelectedElement(mouse, t, elemsTypes, context);
 
-      if(offsetDetected) {
+      if (offsetDetected) {
         canvas.style.cursor = (offsetDetected == "left" || offsetDetected == "right") ? 'col-resize' : 'row-resize';
-      } else if(selectedElem) {
+      } else if (selectedElem) {
         canvas.style.cursor = 'move';
       } else {
         canvas.style.cursor = 'default';
@@ -218,7 +229,7 @@ docsTemplateEngine.controller('appController', ($scope, templateService) => {
 
     if (resizing) {
       const t = JSON.parse($scope.cur.template);
-      
+
       const freeSpaceW = canvas.width / 6;
       const freeSpaceH = canvas.height / 8;
 
@@ -265,7 +276,7 @@ docsTemplateEngine.controller('appController', ($scope, templateService) => {
 
   const mouseUp = (event) => {
     const t = JSON.parse($scope.cur.template);
-    
+
     canvas.style.cursor = "default";
     resizing = false;
     resizeOffset = null;
@@ -283,45 +294,71 @@ docsTemplateEngine.controller('appController', ($scope, templateService) => {
   canvas.onmousemove = mouseMove;
 
   $scope.updateData = (jsonData) => {
-    if (jsonData && JSON.parse(jsonData)) {
+    let data;
+    
+    try {
+      data = JSON.parse(jsonData);
+    } catch (e) {
+      console.log('Ошибка с JSON-данными:\n' + e);
+      $scope.vm.data.valid = false;
+      $scope.vm.data.message = 'Невалидные JSON-данные наборов данных.';
+    }
+
+    if (data) {
+      $scope.vm.data.valid = true;
+      $scope.vm.data.message = null;
       $scope.cur.data = jsonData;
-      console.log(jsonData);
+
       const template = JSON.parse($scope.cur.template);
       $scope.changeCanvas(template);
     }
   };
 
-  $scope.updateTemplate = (jsonStr) => {
-    $scope.cur.template = jsonStr;
-    const template = JSON.parse($scope.cur.template);
-    $scope.changeCanvas(template);
+  $scope.updateTemplate = (jsonTemplate) => {
+    let template;
+    
+    try {
+      template = JSON.parse(jsonTemplate);
+    } catch (e) {
+      console.log('Ошибка с JSON-данными:\n' + e);
+      $scope.vm.template.valid = false;
+      $scope.vm.template.message = 'Невалидные JSON-данные шаблона.';
+    }
+
+    if (template) {
+      $scope.vm.template.valid = true;
+      $scope.vm.template.message = null;
+      $scope.cur.template = jsonTemplate;
+
+      $scope.changeCanvas(template);
+    }
   };
 
 
   $scope.chooseTemplate = (template) => {
     $scope.cur.templateName = template.name;
     const temp = JSON.parse($scope.cur.template);
-    
+
     if (temp && temp.name === template.name) {
       return;
     }
-    
-      $scope.cur.template = JSON.stringify(template, null, 4);
-      const data = initData(template.elems.dataFields);
-      $scope.cur.data = JSON.stringify(data, null, 4);
 
-      template.elems.dataFields = fillTemplateDataFields(template.elems.dataFields, data[$scope.cur.dataset]);
-      
-      if (template.background) {
-        loadImageAsync(imagePath + template.background)
-          .then(img => {
-            $scope.cur.img = img;
-            $scope.changeCanvas(template);
-          });
-      } else {
-        $scope.cur.img = null;
-        $scope.changeCanvas(template);
-      }
+    $scope.cur.template = JSON.stringify(template, null, 4);
+    const data = initData(template.elems.dataFields);
+    $scope.cur.data = JSON.stringify(data, null, 4);
+
+    template.elems.dataFields = fillTemplateDataFields(template.elems.dataFields, data[$scope.cur.dataset]);
+
+    if (template.background) {
+      loadImageAsync(imagePath + template.background)
+        .then(img => {
+          $scope.cur.img = img;
+          $scope.changeCanvas(template);
+        });
+    } else {
+      $scope.cur.img = null;
+      $scope.changeCanvas(template);
+    }
   };
 
   $scope.changeCanvas = (template, editMode = true) => {
