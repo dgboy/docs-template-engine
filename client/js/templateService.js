@@ -73,7 +73,8 @@ docsTemplateEngine.factory('templateService', () => {
               "defaultX": 0,
               "family": "Times New Roman",
               "color": "black",
-              "font": 20
+              "font": 20,
+              "align": "left"
             },
             {
               "value": "ученик группы",
@@ -81,7 +82,8 @@ docsTemplateEngine.factory('templateService', () => {
               "y": 835,
               "family": "Times New Roman",
               "color": "black",
-              "font": 20
+              "font": 20,
+              "align": "left"
             },
             {
               "value": "Проверил:",
@@ -125,7 +127,8 @@ docsTemplateEngine.factory('templateService', () => {
               "y": 860,
               "family": "Times New Roman",
               "color": "black",
-              "font": 20
+              "font": 20,
+              "align": "left"
             },
             {
               "name": "group",

@@ -47,23 +47,23 @@ docsTemplateEngine.controller('appController', ($scope, templateService) => {
 
 
   // отображает пунктиром отступы, если editMode == true
-  const drawOffsets = (offsets) => {
+  const drawOffsets = (offsets, w, h) => {
     context.beginPath();
     context.fillStyle = "lightgray";
     context.setLineDash([10, 10]);
 
     // top
     context.moveTo(0, offsets.top);
-    context.lineTo(canvas.width, offsets.top);
+    context.lineTo(w, offsets.top);
     // bottom
-    context.moveTo(0, canvas.height - offsets.bottom);
-    context.lineTo(canvas.width, canvas.height - offsets.bottom);
+    context.moveTo(0, h - offsets.bottom);
+    context.lineTo(w, h - offsets.bottom);
     // left
     context.moveTo(offsets.left, 0);
-    context.lineTo(offsets.left, canvas.height);
+    context.lineTo(offsets.left, h);
     // right
-    context.moveTo(canvas.width - offsets.right, 0);
-    context.lineTo(canvas.width - offsets.right, canvas.height);
+    context.moveTo(w - offsets.right, 0);
+    context.lineTo(w - offsets.right, h);
 
     context.stroke();
   };
@@ -90,9 +90,6 @@ docsTemplateEngine.controller('appController', ($scope, templateService) => {
       case "right":
         el.x = w - offsets.right - dataFields.w - offsets.left - 1;
         break;
-      default:
-        // el.x = el.defaultX;
-        break;
     };
 
     const x = offsets.left + el.x;
@@ -103,7 +100,7 @@ docsTemplateEngine.controller('appController', ($scope, templateService) => {
     context.strokeRect(x, y, dataFields.w, dataFields.h);
   };
 
-  const drawElements = (elems, offsets, item, w) => {
+  const drawElements = (elems, offsets, w, h) => {
     const data = JSON.parse($scope.cur.data);
     const elemsType = ["labels", "dataFields"];
     const shift = 5;
@@ -135,8 +132,8 @@ docsTemplateEngine.controller('appController', ($scope, templateService) => {
           el.x -= offsets.left + el.x + el.w - (w - offsets.right);
         }
 
-        if (offsets.top + el.y + el.h > canvas.height - offsets.bottom) {
-          el.y -= offsets.top + el.y + el.h - (canvas.height - offsets.bottom);
+        if (offsets.top + el.y + el.h > h - offsets.bottom) {
+          el.y -= offsets.top + el.y + el.h - (h - offsets.bottom);
         }
 
         for (let k = 0; k < lines.length; k++) {
@@ -175,7 +172,7 @@ docsTemplateEngine.controller('appController', ($scope, templateService) => {
     mouse.x = event.pageX - canvas.offsetLeft;
     mouse.y = event.pageY - canvas.offsetTop;
 
-    resizeOffset = getNameResizingOffset(mouse, t.offsets, canvas.width, canvas.height);
+    resizeOffset = getNameResizingOffset(mouse, t.offsets, t.width, t.height);
 
     if (resizeOffset && !$scope.selected) {
       canvas.style.cursor = (resizeOffset === "left" || resizeOffset === "right") ? 'col-resize' : 'row-resize';
@@ -205,6 +202,7 @@ docsTemplateEngine.controller('appController', ($scope, templateService) => {
   };
 
   const mouseMove = (event) => {
+    // Небольшой сдвиг для определения элементов по ширине
     const shift = 4;
 
     mouse.x = event.pageX - canvas.offsetLeft;
@@ -230,23 +228,23 @@ docsTemplateEngine.controller('appController', ($scope, templateService) => {
     if (resizing) {
       const t = JSON.parse($scope.cur.template);
 
-      const freeSpaceW = canvas.width / 6;
-      const freeSpaceH = canvas.height / 8;
+      const freeSpaceW = t.width / 6;
+      const freeSpaceH = t.height / 8;
 
       if (resizeOffset === "left" && mouse.x >= 0 && mouse.x <= freeSpaceW) {
         t.offsets.left = mouse.x;
       }
 
-      if (resizeOffset === "right" && mouse.x >= canvas.width - freeSpaceW && mouse.x <= canvas.width) {
-        t.offsets.right = canvas.width - mouse.x;
+      if (resizeOffset === "right" && mouse.x >= t.width - freeSpaceW && mouse.x <= t.width) {
+        t.offsets.right = t.width - mouse.x;
       }
 
       if (resizeOffset === "top" && mouse.y >= 0 && mouse.y <= freeSpaceH) {
         t.offsets.top = mouse.y;
       }
 
-      if (resizeOffset === "bottom" && mouse.y >= canvas.height - freeSpaceH && mouse.y <= canvas.height) {
-        t.offsets.bottom = canvas.height - mouse.y;
+      if (resizeOffset === "bottom" && mouse.y >= t.height - freeSpaceH && mouse.y <= t.height) {
+        t.offsets.bottom = t.height - mouse.y;
       }
 
       $scope.changeCanvas(t);
@@ -256,17 +254,17 @@ docsTemplateEngine.controller('appController', ($scope, templateService) => {
       const t = JSON.parse($scope.cur.template);
       const el = t.elems[dragElem.type][dragElem.id];
 
-      const lines = getLines(el.value, canvas.width - (t.offsets.left + t.offsets.right), context);
+      const lines = getLines(el.value, t.width - (t.offsets.left + t.offsets.right), context);
       const width = getWidthLongString(context, lines);
 
       const startElemX = mouse.x - dragElem.shift.x;
       const startElemY = mouse.y - dragElem.shift.y;
 
-      if (!el.align && startElemX >= t.offsets.left && startElemX + width < canvas.width - t.offsets.right + shift) {
+      if (!el.align && startElemX >= t.offsets.left && startElemX + width < t.width - t.offsets.right + shift) {
         el.x = mouse.x - t.offsets.left - dragElem.shift.x;
       }
 
-      if (startElemY >= t.offsets.top && startElemY + el.font < canvas.height - t.offsets.top) {
+      if (startElemY >= t.offsets.top && startElemY + el.font < t.height - t.offsets.top) {
         el.y = mouse.y - t.offsets.top - dragElem.shift.y;
       }
 
@@ -363,19 +361,21 @@ docsTemplateEngine.controller('appController', ($scope, templateService) => {
 
   $scope.changeCanvas = (template, editMode = true) => {
     $scope.cur.template = JSON.stringify(template, null, 4);
-    context.clearRect(0, 0, canvas.width, canvas.height);
-
+    canvas.width = template.width;
+    canvas.height = template.height;
+    
     const data = JSON.parse($scope.cur.data);
     template.elems.dataFields = fillTemplateDataFields(template.elems.dataFields, data[$scope.cur.dataset]);
-
-    if ($scope.cur.img) {
-      context.drawImage($scope.cur.img, 0, 0, canvas.width, canvas.height);
+    
+    context.clearRect(0, 0, template.width, template.height);
+    if (template.background && $scope.cur.img) {
+      context.drawImage($scope.cur.img, 0, 0, template.width, template.height);
     }
 
-    drawElements(template.elems, template.offsets, $scope.cur.dataset, template.width);
+    drawElements(template.elems, template.offsets, template.width, template.height);
 
     if (editMode) {
-      drawOffsets(template.offsets);
+      drawOffsets(template.offsets, template.width, template.height);
     }
   };
 
@@ -401,12 +401,16 @@ docsTemplateEngine.controller('appController', ($scope, templateService) => {
         let img = new Image();
 
         img.onload = () => {
+          canvas.width = template.width = img.width;
+          canvas.height = template.height = img.height;
           $scope.cur.img = img;
           $scope.changeCanvas(template);
         };
 
         img.src = event.target.result;
       };
+
+      template.background = e.target.files[0].name;
       reader.readAsDataURL(e.target.files[0]);
     }
 

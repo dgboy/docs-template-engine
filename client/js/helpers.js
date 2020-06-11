@@ -145,3 +145,26 @@ const fillTemplateDataFields = (dataFields, data) => {
 
   return dataFields;
 };
+
+const applyAlignment = (t) => {
+  for (let i = 0; i < elemsType.length; i++) {
+    for (let j = 0; elems[elemsType[i]] && j < elems[elemsType[i]].length; j++) {
+      const lineW = context.measureText(lines[k]).width;
+    
+      switch (el.align) {
+        case "left":
+          el.x = 0;
+          break;
+        case "center":
+          el.x = parseInt(w - offsets.right - offsets.left - lineW) / 2;
+          break;
+        case "right":
+          el.x = w - offsets.right - lineW - offsets.left - 1;
+          break;
+        default:
+          break;
+      };
+
+    }
+  }
+};
