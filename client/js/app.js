@@ -324,7 +324,7 @@ docsTemplateEngine.controller('appController', ($scope, templateService) => {
   $scope.chooseTemplate = (template) => {
     $scope.cur.templateName = template.name;
     const temp = JSON.parse($scope.cur.template);
-    $scope.cur.img = null;
+    // $scope.cur.img = null;
     // temp.background = null;
 
     if (temp && temp.name === template.name) {
@@ -359,7 +359,7 @@ docsTemplateEngine.controller('appController', ($scope, templateService) => {
     template.elems.dataFields = fillTemplateDataFields(template.elems.dataFields, data[$scope.cur.dataset]);
 
     context.clearRect(0, 0, template.width, template.height);
-    if (template.background && $scope.cur.img) {
+    if ($scope.cur.img) {
       context.drawImage($scope.cur.img, 0, 0, template.width, template.height);
     }
 
