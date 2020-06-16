@@ -230,7 +230,7 @@ docsTemplateEngine.factory('templateService', () => {
       },
       {
         "name": "Титульный лист диплома",
-        "background": "diplom-title.jpg",
+        "background": null,
         "width": 793,
         "height": 1122,
         "offsets": {
@@ -240,14 +240,138 @@ docsTemplateEngine.factory('templateService', () => {
           "bottom": 75
         },
         "elems": {
-          "labels": [
+          "labels": [{
+              "value": "Министерство образования Нижегородской области",
+              "x": 0,
+              "y": 10,
+              "family": "Times New Roman",
+              "font": 20,
+              "align": "center"
+            },
+            {
+              "value": "Государственное бюджетное профессиональное образовательное учреждение «Нижегородский радиотехнический колледж»",
+              "x": 0,
+              "y": 30,
+              "family": "Times New Roman",
+              "color": "black",
+              "font": 20,
+              "align": "center"
+            },
+            {
+              "value": "Выпускная квалификационная работа",
+              "x": 0,
+              "y": 300,
+              "family": "Times New Roman",
+              "color": "black",
+              "font": 24,
+              "align": "center"
+            },
+            {
+              "value": "(дипломный проект)",
+              "x": 0,
+              "y": 320,
+              "family": "Times New Roman",
+              "color": "black",
+              "font": 24,
+              "align": "center"
+            },
+            {
+              "value": "Специальность:",
+              "x": 0,
+              "y": 380,
+              "family": "Times New Roman",
+              "color": "black",
+              "font": 20,
+              "align": "center"
+            },
+            {
+              "value": "09.02.04 Информационные системы (по отраслям)",
+              "x": 0,
+              "y": 400,
+              "family": "Times New Roman",
+              "color": "black",
+              "font": 20,
+              "align": "center"
+            },
+            {
+              "value": "Разработал:",
+              "x": 0,
+              "y": 700,
+              "defaultX": 0,
+              "family": "Times New Roman",
+              "color": "black",
+              "font": 20,
+              "align": "left"
+            },
+            {
+              "value": "обучающийся",
+              "x": 0,
+              "y": 720,
+              "family": "Times New Roman",
+              "color": "black",
+              "font": 20,
+              "align": "left"
+            },
+            {
+              "value": "группы",
+              "x": 0,
+              "y": 740,
+              "family": "Times New Roman",
+              "color": "black",
+              "font": 20,
+              "align": "left"
+            },
+            {
+              "value": "ФИО",
+              "x": 0,
+              "y": 760,
+              "family": "Times New Roman",
+              "color": "black",
+              "font": 20,
+              "align": "left"
+            },
+            {
+              "value": "Руководитель работы:",
+              "x": 400,
+              "y": 700,
+              "family": "Times New Roman",
+              "color": "black",
+              "font": 20,
+              "align": "right"
+            },
+            {
+              "value": "ФИО",
+              "x": 350,
+              "y": 720,
+              "family": "Times New Roman",
+              "color": "black",
+              "font": 20
+            },
+            {
+              "value": "г.Нижний Новгород",
+              "x": 320,
+              "y": 920,
+              "family": "Times New Roman",
+              "color": "black",
+              "font": 20,
+              "align": "center"
+            },
+            {
+              "value": "2020г.",
+              "x": 380,
+              "y": 950,
+              "family": "Times New Roman",
+              "color": "black",
+              "font": 20,
+              "align": "center"
+            }
           ],
           "dataFields": [
             {
                 "name": "student",
                 "value": "student",
-                "x": 59,
-                "y": 765,
+                "x": 50,
+                "y": 760,
                 "family": "Times New Roman",
                 "color": "black",
                 "font": 20,
@@ -257,8 +381,8 @@ docsTemplateEngine.factory('templateService', () => {
             {
                 "name": "group",
                 "value": "group",
-                "x": 79,
-                "y": 742,
+                "x": 70,
+                "y": 740,
                 "family": "Times New Roman",
                 "color": "black",
                 "font": 20,
@@ -269,7 +393,7 @@ docsTemplateEngine.factory('templateService', () => {
                 "name": "teacher",
                 "value": "teacher",
                 "x": 399,
-                "y": 743,
+                "y": 720,
                 "family": "Times New Roman",
                 "color": "black",
                 "font": 20,

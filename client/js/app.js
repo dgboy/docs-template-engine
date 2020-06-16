@@ -324,6 +324,8 @@ docsTemplateEngine.controller('appController', ($scope, templateService) => {
   $scope.chooseTemplate = (template) => {
     $scope.cur.templateName = template.name;
     const temp = JSON.parse($scope.cur.template);
+    $scope.cur.img = null;
+    // temp.background = null;
 
     if (temp && temp.name === template.name) {
       return;
@@ -338,6 +340,7 @@ docsTemplateEngine.controller('appController', ($scope, templateService) => {
     if (template.background) {
       loadImageAsync(imagePath + template.background)
         .then(img => {
+          console.log(img);
           $scope.cur.img = img;
           $scope.changeCanvas(template);
         });
@@ -395,7 +398,7 @@ docsTemplateEngine.controller('appController', ($scope, templateService) => {
         };
         img.src = event.target.result;
       };
-      template.background = e.target.files[0].name;
+      // template.background = e.target.files[0].name;
       reader.readAsDataURL(e.target.files[0]);
     }
 
